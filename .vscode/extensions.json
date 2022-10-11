@@ -1,0 +1,8 @@
+{
+	"recommendations": [
+		"richardwillis.vscode-gradle-extension-pack",
+		"xaver.clang-format",
+		"sonarsource.sonarlint-vscode",
+		"vscjava.vscode-java-pack"
+	]
+}

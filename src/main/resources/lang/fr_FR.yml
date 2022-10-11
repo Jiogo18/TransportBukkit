@@ -1,0 +1,89 @@
+# Modifié par Jarven le 2022-10-06.
+# Vous pouvez désactiver l'actualisation automatique si vous modifiez ce fichier manuellement.
+version.autoupdate: true
+version.warnings: true
+version.revision: "2022-10-06"
+
+# Commandes : help, reload, list, info
+transport:
+  help:
+    body: |-
+      Plugin de véhicules dans Minecraft
+      §7Version : §f%version%
+      §7Auteur : §f%author%
+      §7Commandes :
+      §f/transport help §7- Affiche l'aide
+      §f/transport reload §7- Recharge la configuration
+      §f/transport list (filtre) §7- Liste les véhicules
+      §f/transport info [vehicle|part|player] (filtre) §7- Affiche les informations sur le véhicule
+
+  vehicle:
+    unknown: "Véhicule %vehicle% inconnu"
+    list: |-
+      §7Véhicules :
+      %vehicles%
+    info: |-
+      §7Véhicule : §f%vehicle%
+      §7Template : §f%template%
+      §7Localisation : %location%
+      §7Destination : %destination%
+      §7Vitesse : §f%speed% %fullspeed%
+      §7Accélération : §f%acceleration% %fullacceleration%
+      §7Places : §f%seats%
+      §7Passagers : §f%passengers%
+    already_exists: "Le véhicule %vehicle% existe déjà"
+    created: "Véhicule %vehicle% créé"
+    creation_failed: "La création du véhicule a échoué"
+    removed: "Véhicule %vehicle% supprimé"
+    removal_failed: "La suppression du véhicule a échoué"
+    teleported: "Véhicule %vehicle% téléporté"
+
+  part:
+    unknown: "Partie de véhicule %part% inconnue"
+    info: |-
+      §7Partie de véhicule : §f%part%
+      §7Véhicule : §f%vehicle%
+      §7Localisation : %location%
+      §7Type: §f%type%
+
+  template:
+    vehicle:
+      unknown: "Template de véhicule %template_vehicle% inconnue"
+      list: |-
+        §7Templates de véhicules :
+        %vehicle_templates%
+      info: |-
+        §7Template de véhicule : §f%template_vehicle%
+        §7Vitesse maximale : §f%maxspeed%
+        §7Accélération maximale : §f%maxacceleration%
+        §7Places : §f%seats%
+        §7Parties de véhicule : §f%parts%
+    part:
+      unknown: "Template de partie %template_part% inconnue"
+      list: |-
+        §7Templates de parties de véhicules :
+        %part_templates%
+      info: |-
+        §7Template de partie de véhicule : §f%template_part%
+        §7Type : §f%type%
+        §7Offset : §f%offset%
+        §7Rotation : §f%rotation%
+
+  player:
+    unknown: "Joueur %player% inconnu"
+    info: |-
+      §7Joueur : §f%player%
+      §7Véhicule : §f%vehicle%
+      §7Localisation : %location%
+  not_an_entity: "Pas une entité"
+  need_location: "Vous devez être dans un monde ou préciser une localisation"
+
+  sit:
+    enter: "%player% est entré dans le véhicule %vehicle%"
+    full: "Le véhicule %vehicle% est plein"
+    exit: "%player% a quitté le véhicule %vehicle%"
+    not_in_vehicle: "Vous n'êtes pas dans un véhicule"
+    locked: "%vehicle% est verrouillé"
+    already_locked: "%vehicle% est déjà verrouillé"
+    unlocked: "%vehicle% est déverrouillé"
+    already_unlocked: "%vehicle% est déjà déverrouillé"

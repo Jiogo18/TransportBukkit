@@ -1,0 +1,28 @@
+# This is an example file to create vehicle parts template
+# This template is used in the "boat" vehicle template
+# Templates are readonly by the plugin, which means you have to edit them manualy
+
+name: boat_back
+
+# type of the part (Require restart)
+# ARMOR_STAND_HEAD: an armor stand with an item on his head
+type: ARMOR_STAND_HEAD
+
+# Rotate the armor stand by its head or with the tp
+# TELEPORT is less accurate, but smoother (default)
+# ROTATE_HEAD is more accurate, but less smooth at high speed
+# ROTATE_HEAD_DELAYED is the same as ROTATE_HEAD, but with a delay to make it smoother with the tp animation
+rotationType: TELEPORT
+
+offset:
+  x: 0
+  y: -0.4
+  z: 0
+  yaw: 180
+  pitch: 0
+  roll: 0
+
+inventory:
+  - slot: HEAD
+    material: CARROT_ON_A_STICK
+    custom_model_data: 1004
