@@ -3,6 +3,7 @@ package fr.jarven.transportbukkit.commands.transport;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,13 @@ public class CommandTransportInfo extends CommandTools {
 			.replace("%template%", vehicle.getTemplate().getName())
 			.replace("%location%", toReadbleString(vehicle.getLocation()))
 			.replace("%destination%", toReadbleString(vehicle.getDestination()))
-			.replace("%speed%", String.valueOf(vehicle.getSpeed()))
+			.replace("%speed%", String.valueOf(vehicle.getVelocity()))
 			.replace("%fullspeed%", toReadbleString(vehicle.getAllSpeed()))
 			.replace("%acceleration%", String.valueOf(vehicle.getAcceleration()))
 			.replace("%fullacceleration%", toReadbleString(vehicle.getAllAcceleration()))
 			.replace("%seats%", String.valueOf(vehicle.getSeats().size()))
 			.replace("%passengers%", String.valueOf(vehicle.getPassengers().size()))
+			.replace("%last_saved%", toReadbleString(new Date(vehicle.getSaveTimestamp()), sender))
 			.send(sender);
 		return 1;
 	}

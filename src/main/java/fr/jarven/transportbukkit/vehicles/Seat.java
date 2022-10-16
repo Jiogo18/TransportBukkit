@@ -10,8 +10,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.SeatProperties;
@@ -23,16 +25,24 @@ public class Seat {
 	private Entity seatEntity;
 	private UUID seatEntityUuid;
 
+	private static final Method[] methods = ((Supplier<Method[]>) () -> {
+		try {
+			Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
+			return new Method[] {
+				getHandle, getHandle.getReturnType().getDeclaredMethod("setPositionRotation", double.class, double.class, double.class, float.class, float.class)};
+		} catch (Exception ex) {
+			return null;
+		}
+	}).get();
+
 	protected Seat(Vehicle vehicle, SeatProperties template) {
 		this.vehicle = vehicle;
 		this.template = template;
 	}
 
 	protected void update() {
-		if (seatEntity == null || !seatEntity.isValid()) {
-			spawn();
-		} else {
-			updateLocation();
+		if (seatEntity != null && seatEntity.isValid()) {
+			updateRealLocation();
 		}
 	}
 
@@ -44,20 +54,27 @@ public class Seat {
 			if (seatEntity == null) {
 				seatEntity = template.spawnEntity(getLocation());
 				seatEntity.setCustomName(vehicle.getName() + " Seat " + template.getSeatIndex());
-				seatEntity.addScoreboardTag("TransportBukkit_Seat");
 				seatEntityUuid = seatEntity.getUniqueId();
 				vehicle.makeDirty();
+			} else {
+				updateRealLocation();
 			}
 		} else {
-			updateLocation();
+			updateRealLocation();
 		}
 	}
 
-	protected void updateLocation() {
+	protected void respawn() {
+		if (seatEntity == null || !seatEntity.isValid()) {
+			spawn();
+		} else {
+			updateRealLocation();
+		}
+	}
+
+	protected void updateFakeLocation() {
 		if (seatEntity != null && seatEntity.isValid()) {
 			Location loc = getLocation();
-			seatEntity.teleport(loc, TeleportCause.PLUGIN);
-
 			PacketContainer fakeTp = new PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT);
 			fakeTp.getIntegers().write(0, seatEntity.getEntityId());
 			fakeTp.getDoubles()
@@ -72,8 +89,22 @@ public class Seat {
 		}
 	}
 
+	protected void updateRealLocation() {
+		if (seatEntity != null && seatEntity.isValid()) {
+			Location loc = getLocation();
+			if (hasPassenger()) {
+				try {
+					methods[1].invoke(methods[0].invoke(seatEntity), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+				} catch (Exception ex) {
+				}
+			} else {
+				seatEntity.teleport(loc, TeleportCause.PLUGIN);
+			}
+		}
+	}
+
 	public LocationRollable getLocation() {
-		return template.getLocationIfEntity(vehicle.getLocation(), 1);
+		return template.getLocationIfEntity(vehicle.getLocationWithOffset(), null, 1);
 	}
 
 	public Vehicle getVehicle() {

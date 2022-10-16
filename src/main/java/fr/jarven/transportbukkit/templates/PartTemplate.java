@@ -7,6 +7,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.io.File;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.utils.ItemTemplate;
@@ -15,7 +16,7 @@ import fr.jarven.transportbukkit.utils.MovementsVector;
 public class PartTemplate extends BasePartTemplate {
 	private final String name;
 	private PartType type;
-	private boolean animated;
+	private Set<AnimationTemplate> animations;
 	private Map<EquipmentSlot, ItemTemplate> inventory = new EnumMap<>(EquipmentSlot.class);
 	private RotationType rotationType;
 
@@ -63,26 +64,35 @@ public class PartTemplate extends BasePartTemplate {
 		PartTemplate partTemplate = new PartTemplate(name, type);
 
 		partTemplate.offset = MovementsVector.fromConfig(config.getConfigurationSection("offset"));
-		partTemplate.animated = config.getBoolean("animated", false);
 		ItemTemplate.loadSharedItems(partTemplate.inventory, config.getList("inventory"));
 		partTemplate.rotationType = RotationType.valueOf(config.getString("rotationType", "TELEPORT"));
+		if (config.contains("animation")) {
+			partTemplate.animations = AnimationTemplate.loadAnimations(config.getConfigurationSection("animation"));
+		} else {
+			partTemplate.animations = null;
+		}
+
 		return partTemplate;
 	}
 
 	protected void update(PartTemplate other) {
 		super.update(other);
-		this.animated = other.animated;
+		this.animations = other.animations;
 		this.inventory = other.inventory;
 		this.rotationType = other.rotationType;
 	}
 
 	public boolean isAnimated() {
-		return animated;
+		return animations != null && !animations.isEmpty();
 	}
 
 	public void applyInventory(EntityEquipment equipment) {
 		for (Map.Entry<EquipmentSlot, ItemTemplate> entry : inventory.entrySet()) {
 			equipment.setItem(entry.getKey(), entry.getValue().createItem());
 		}
+	}
+
+	public Set<AnimationTemplate> getAnimations() {
+		return animations;
 	}
 }

@@ -85,6 +85,7 @@ public class TransportPlugin extends JavaPlugin {
 	public void onDisable() {
 		super.onDisable();
 		CommandManager.onDisable();
+		animationManager.onDisable();
 		vehicleManager.onDisable();
 		LOGGER.info("TransportBukkit is disabled!");
 	}

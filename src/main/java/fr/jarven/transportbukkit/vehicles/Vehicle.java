@@ -31,8 +31,9 @@ public class Vehicle {
 	private final Map<PartTemplate, VehiclePart> parts = new HashMap<>();
 	private final List<Seat> seats = new ArrayList<>();
 	private LocationRollable location;
+	private LocationRollable locationWithOffset;
 	private LocationRollable destination;
-	private MovementsVector speed = new MovementsVector(0, 0, 0);
+	private MovementsVector velocity = new MovementsVector(0, 0, 0);
 	private MovementsVector acceleration = new MovementsVector(0, 0, 0);
 	private long saveTimestamp = 0;
 	private boolean locked = false;
@@ -48,13 +49,14 @@ public class Vehicle {
 		this.name = name;
 		this.template = template;
 		this.setLocation(location);
-		this.setDestination(location);
+		this.setDestination(null);
 	}
 
 	protected void applyTemplate() {
 		applyTemplateParts();
 		applyTemplateSeats();
 		applyTemplateProperties();
+		teleport(getLocation());
 	}
 
 	private void applyTemplateParts() {
@@ -105,12 +107,12 @@ public class Vehicle {
 					seat.loadConfig(seatConfig);
 				}
 			}
-			seat.update();
+			seat.spawn();
 		}
 	}
 
 	private void applyTemplateProperties() {
-		speed.applyMaximum(template.getMaxSpeed());
+		velocity.applyMaximum(template.getMaxSpeed());
 		acceleration.applyMaximum(template.getMaxAcceleration());
 	}
 
@@ -205,6 +207,15 @@ public class Vehicle {
 		return seats;
 	}
 
+	public void respawn() {
+		for (VehiclePart part : parts.values()) {
+			part.respawn();
+		}
+		for (Seat seat : seats) {
+			seat.respawn();
+		}
+	}
+
 	protected void removeInternal() {
 		this.parts.values().forEach(VehiclePart::removeInternal);
 		this.parts.clear();
@@ -213,51 +224,73 @@ public class Vehicle {
 	}
 
 	public void teleport(LocationRollable location) {
+		if (location == null) return;
+		LocationRollable previousLocation = this.location;
 		this.setLocation(location);
+		updateFakeLocation(); // Send packets
+		updateRealLocation(); // Update real location with teleport (delayed)
+		if (!this.location.equals(previousLocation)) {
+			makeLazyDirty(); // Save in a long time
+		}
+	}
+
+	private void updateFakeLocation() {
 		for (VehiclePart part : parts.values()) {
 			part.updateFakeLocation();
 		}
 		for (Seat seat : seats) {
-			seat.updateLocation();
+			seat.updateFakeLocation();
 		}
+	}
 
+	private void updateRealLocation() {
 		// Create a bukit task to update the location of the vehicle
 		if (updateRealTask == null) {
-			Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> {
+			updateRealTask = Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> {
 				for (VehiclePart part : parts.values()) {
 					part.updateRealLocation();
 				}
+				for (Seat seat : seats) {
+					seat.updateRealLocation();
+				}
+				// Send a packet in 2 ticks to for update
+				Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> updateFakeLocation(), 2L);
+				Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> updateFakeLocation(), 4L);
 				updateRealTask = null;
-				makeLazyDirty();
-			}, 20L); // Update the real location (not a fake packet) every second
+			}, 40L); // Update the real location (not a fake packet) every second
 		}
 	}
 
 	private void setLocation(LocationRollable location) {
-		this.location = location.add(template.getOffset());
+		this.location = location;
+		this.locationWithOffset = new LocationRollable(location).add(template.getOffset());
 	}
 
 	public LocationRollable getLocation() {
-		return new LocationRollable(location); // clone
+		return location;
+	}
+
+	public LocationRollable getLocationWithOffset() {
+		return new LocationRollable(locationWithOffset); // clone
 	}
 
 	public void setDestination(LocationRollable location) {
-		this.destination = location.add(template.getOffset());
+		this.destination = location;
 	}
 	public Location getDestination() {
 		return destination;
 	}
 
 	void setSpeed(MovementsVector speed) {
-		this.speed = speed;
+		this.velocity = speed;
 	}
 
 	public MovementsVector getAllSpeed() {
-		return speed;
+		return velocity;
 	}
 
-	public double getSpeed() {
-		return speed.getDistanceWithOrigin();
+	public double getVelocity() {
+		return velocity.getDistanceWithOrigin();
 	}
 
 	void setAcceleration(MovementsVector acceleration) {
@@ -342,7 +375,7 @@ public class Vehicle {
 		if (!templateName.equals(this.template.getName())) {
 			TransportPlugin.LOGGER.warning("Vehicle " + this.name + " has been changed template to " + templateName + " in file " + file.getName() + ". Need restart to apply.");
 		}
-		this.location = (LocationRollable) config.get("location");
+		this.setLocation((LocationRollable) config.get("location"));
 		this.saveTimestamp = config.getLong("saveTimestamp");
 		this.locked = config.getBoolean("locked");
 

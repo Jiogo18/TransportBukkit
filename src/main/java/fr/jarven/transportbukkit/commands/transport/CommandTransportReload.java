@@ -19,7 +19,6 @@ public class CommandTransportReload extends CommandTools {
 			}))
 			.then(literal("config").executes((sender, args) -> {
 				TransportPlugin.getInstance().reloadConfig();
-				;
 				sender.sendMessage("§fReloaded config");
 				return 1;
 			}))

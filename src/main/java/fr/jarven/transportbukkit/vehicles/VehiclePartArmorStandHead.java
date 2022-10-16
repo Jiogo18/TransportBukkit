@@ -24,6 +24,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 	private static final int NMS_ARMOR_STAND_ROTATE_PACKET_ID = NMS_NUMBER_VERSION >= 17 ? 16 : 15;
 	private ArmorStand entity;
 	private UUID entityUuid;
+	private long lastEntityGetTimestamp = 0;
 
 	protected VehiclePartArmorStandHead(Vehicle vehicle, PartTemplate properties) {
 		super(vehicle, properties);
@@ -46,8 +47,11 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		}
 	}
 
-	void respawn() {
+	@Override
+	protected void respawn() {
 		if (entityUuid != null) {
+			// Load the chunk if needed
+			getVehicle().getLocation().getChunk();
 			entity = (ArmorStand) Bukkit.getEntity(entityUuid);
 			if (entity == null) {
 				entityUuid = null;
@@ -61,13 +65,34 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		}
 	}
 
-	@Override
-	public LocationRollable getLocation() {
-		return template.getLocationIfEntity(getVehicle().getLocation(), 1.4);
+	private boolean isEntityValid() {
+		if (entity != null && entity.isValid()) {
+			return true;
+		}
+		if (entityUuid == null) {
+			spawn();
+			return true;
+		}
+		long now = System.currentTimeMillis();
+		long timeSinceLastGet = now - lastEntityGetTimestamp;
+		if (timeSinceLastGet < 5000) {
+			return false;
+		}
+		entity = (ArmorStand) Bukkit.getEntity(entityUuid);
+		lastEntityGetTimestamp = now;
+		if (entity == null || !entity.isValid()) {
+			entity = null;
+		}
+		return entity != null;
 	}
 
-	protected void updateFakeLocation() {
-		if (entity != null && entity.isValid()) {
+	@Override
+	public LocationRollable getLocation() {
+		return template.getLocationIfEntity(getVehicle().getLocationWithOffset(), getOffsetAnimation(), 1.4);
+	}
+
+	public void updateFakeLocation() {
+		if (isEntityValid()) {
 			LocationRollable loc = getLocation();
 			float yaw = loc.getYaw();
 			float pitch = loc.getPitch();
@@ -130,9 +155,8 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		}
 	}
 
-	protected void updateRealLocation() {
-		if (entity != null && entity.isValid()) {
-			updateFakeLocation(); // Send a fake location also to be sure the packet is sent
+	public void updateRealLocation() {
+		if (isEntityValid()) {
 			LocationRollable loc = getLocation();
 			float yaw = loc.getYaw();
 			float pitch = loc.getPitch();
@@ -162,7 +186,13 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 	}
 
 	protected void update() {
-		respawn();
+		if (entityUuid != null) {
+			entity = (ArmorStand) Bukkit.getEntity(entityUuid);
+			if (entity != null) {
+				equipEntity();
+				updateRealLocation();
+			}
+		}
 		if (template.isAnimated()) {
 			TransportPlugin.getAnimationManager().updateAnimation(this);
 		}

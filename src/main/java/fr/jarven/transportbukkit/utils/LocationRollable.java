@@ -34,7 +34,10 @@ public class LocationRollable extends Location {
 		if (o == this) return true;
 		if (o instanceof LocationRollable) {
 			LocationRollable other = (LocationRollable) o;
-			return super.equals(other) && this.roll == other.roll;
+			if (Double.doubleToLongBits(this.roll) != Double.doubleToLongBits(other.roll)) {
+				return false;
+			}
+			return super.equals(other);
 		} else if (o instanceof Location) {
 			Location other = (Location) o;
 			return super.equals(other);

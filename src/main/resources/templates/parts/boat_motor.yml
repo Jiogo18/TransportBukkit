@@ -17,7 +17,7 @@ rotationType: TELEPORT
 offset:
   x: -0.05
   y: -2.05
-  z: -2.24
+  z: -2.65
   yaw: 0
   pitch: 90
   roll: 0
@@ -27,13 +27,9 @@ inventory:
     material: CARROT_ON_A_STICK
     custom_model_data: 1005
 
-# Default positions
-rotations:
-  HEAD:
-   pitch: 90
-
 # Movement per tick
 animation:
-  HEAD:
-    dependson: ACCELERATION
-    yaw: 18
+  ROLL:
+    propotional: CONSTANT
+    start: 0
+    step: 18

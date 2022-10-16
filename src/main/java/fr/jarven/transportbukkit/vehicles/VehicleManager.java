@@ -4,13 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.tasks.SaveTask;
@@ -70,30 +70,34 @@ public class VehicleManager {
 	}
 
 	public void reload() {
-		SaveTask.reload();
-		vehicles.forEach(Vehicle::applyTemplate);
-
 		onDisable();
+		SaveTask.reload();
+
+		vehicles.forEach(Vehicle::applyTemplate);
 		if (!vehicleFolder.exists()) {
 			makeVehicleFolderIfNeeded();
 		} else {
 			final SortedSet<Vehicle> previousVehicles = new TreeSet<>(vehicles);
 
-			List<Vehicle> newVehicles =
-				Stream.of(vehicleFolder.listFiles(file -> file.getName().endsWith(".yml")))
-					.map(file -> {
-						String name = file.getName().substring(0, file.getName().length() - 4); // Remove .yml
-						try {
-							Optional<Vehicle> previousVehicle = previousVehicles.stream().filter(r -> r.getName().equals(name)).findAny();
-							return Vehicle.fromConfig(file, previousVehicle);
-						} catch (Exception e) {
-							TransportPlugin.LOGGER.warning("Vehicle not loaded : '" + name + "'");
-							e.printStackTrace();
-							return null;
-						}
-					})
-					.filter(vehicle -> vehicle != null)
-					.collect(Collectors.toList());
+			List<Vehicle> newVehicles = new ArrayList<>();
+
+			for (File file : vehicleFolder.listFiles()) {
+				if (!file.getName().endsWith(".yml"))
+					continue;
+
+				String name = file.getName().substring(0, file.getName().length() - 4); // Remove .yml
+
+				try {
+					Optional<Vehicle> previousVehicle = previousVehicles.stream().filter(r -> r.getName().equals(name)).findAny();
+					Vehicle vehicle = Vehicle.fromConfig(file, previousVehicle);
+					if (vehicle != null) {
+						newVehicles.add(vehicle);
+					}
+				} catch (Exception e) {
+					TransportPlugin.LOGGER.warning("Vehicle not loaded : '" + name + "'");
+					e.printStackTrace();
+				}
+			}
 
 			List<Vehicle> vehiclesToRemove = vehicles
 								 .stream()

@@ -75,8 +75,40 @@ public class MovementsVector extends Vector {
 		return roll;
 	}
 
+	public void setForwardBackward(double forwardBackward) {
+		this.setX(forwardBackward);
+	}
+
+	public void setLeftRight(double leftRight) {
+		this.setY(leftRight);
+	}
+
+	public void setUpDown(double upDown) {
+		this.setZ(upDown);
+	}
+
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+	}
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+	}
+
+	public void setRoll(float roll) {
+		this.roll = roll;
+	}
+
 	public double getDistanceWithOrigin() {
 		return this.distance(new Vector());
+	}
+
+	public double getDistanceWithOriginSquared() {
+		return this.distanceSquared(new Vector());
+	}
+
+	public float getRotationDistanceWithOrigin() {
+		return (float) Math.sqrt(Math.pow(yaw, 2) + Math.pow(pitch, 2) + Math.pow(roll, 2));
 	}
 
 	private static double getDouble(Object object) {

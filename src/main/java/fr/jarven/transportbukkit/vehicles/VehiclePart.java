@@ -7,14 +7,21 @@ import java.util.UUID;
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.PartTemplate;
 import fr.jarven.transportbukkit.utils.LocationRollable;
+import fr.jarven.transportbukkit.utils.MovementsVector;
 
 public abstract class VehiclePart {
 	private Vehicle vehicle;
 	protected final PartTemplate template;
+	private final MovementsVector offsetAnimation;
 
 	protected VehiclePart(Vehicle vehicle, PartTemplate properties) {
 		this.vehicle = vehicle;
 		this.template = properties;
+		if (this.template.isAnimated()) {
+			this.offsetAnimation = new MovementsVector();
+		} else {
+			this.offsetAnimation = null;
+		}
 	}
 
 	protected void setVehicle(Vehicle vehicle) {
@@ -29,10 +36,11 @@ public abstract class VehiclePart {
 		return template;
 	}
 
+	protected abstract void respawn();
 	public abstract LocationRollable getLocation();
 
-	protected abstract void updateFakeLocation();
-	protected abstract void updateRealLocation();
+	public abstract void updateFakeLocation();
+	public abstract void updateRealLocation();
 	protected abstract void update();
 	public abstract UUID getEntityUUID();
 	protected abstract void removeInternal();
@@ -57,5 +65,9 @@ public abstract class VehiclePart {
 		if (!templateName.equals(this.template.getName())) {
 			TransportPlugin.LOGGER.warning("Part " + this.template.getName() + " has a different template name than the one saved in config. Need restart to change.");
 		}
+	}
+
+	public MovementsVector getOffsetAnimation() {
+		return offsetAnimation;
 	}
 }

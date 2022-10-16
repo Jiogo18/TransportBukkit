@@ -84,7 +84,7 @@ public class SaveTask {
 	}
 
 	public static void saveNowIfNeeded(Vehicle vehicle) {
-		if (vehicles.containsKey(vehicle)) {
+		if (vehicles.containsKey(vehicle) || vehiclesLazySaves.containsKey(vehicle)) {
 			cancelSaveLater(vehicle);
 			vehicle.save();
 		}

@@ -32,6 +32,7 @@ public class Messages {
 
 	public enum Resources {
 		HELP_BODY("transport.help.body"),
+		DATE_FORMAT("transport.date.format"),
 
 		VEHICLE_UNKNOWN("transport.vehicle.unknown"),
 		VEHICLE_INFO("transport.vehicle.info"),
@@ -42,6 +43,7 @@ public class Messages {
 		VEHICLE_REMOVED("transport.vehicle.removed"),
 		VEHICLE_REMOVAL_FAILED("transport.vehicle.removal_failed"),
 		VEHICLE_TELEPORTED("transport.vehicle.teleported"),
+		VEHICLE_RESPAWNED("transport.vehicle.respawned"),
 
 		TEMPLATE_VEHICLE_UNKNOWN("transport.template.vehicle.unknown"),
 		TEMPLATE_VEHICLE_LIST("transport.template.vehicle.list"),

@@ -17,6 +17,9 @@ transport:
       §f/transport list (filter) §7- List vehicles
       §f/transport info [vehicle|part|player] (filter) §7- Display information about the vehicle
 
+  date:
+    format: "yyyy-MM-dd HH:mm:ss"
+
   vehicle:
     unknown: "Vehicle %vehicle% unknown"
     list: |-
@@ -31,12 +34,14 @@ transport:
       §7Acceleration: §f%acceleration% (%fullacceleration%)
       §7Seats: §f%seats%
       §7Passengers: §f%passengers%
+      §7Last saved: §f%last_saved%
     already_exists: "Vehicle %vehicle% already exists"
     created: "Vehicle %vehicle% created"
     creation_failed: "Vehicle creation failed"
     removed: "Vehicle %vehicle% removed"
     removal_failed: "Vehicle removal failed"
     teleported: "Vehicle %vehicle% teleported"
+    respawned: "Vehicle %vehicle% respawned"
 
   part:
     unknown: "Vehicle part %part% unknown"
