@@ -14,12 +14,12 @@ public class MovementsConstraints implements ConfigurationSerializable {
 	private double right;
 	private double up;
 	private double down;
-	private double yawLeft;
-	private double yawRight;
-	private double pitchUp;
-	private double pitchDown;
-	private double rollLeft;
-	private double rollRight;
+	private float yawLeft;
+	private float yawRight;
+	private float pitchUp;
+	private float pitchDown;
+	private float rollLeft;
+	private float rollRight;
 
 	private MovementsConstraints() {
 	}
@@ -63,27 +63,27 @@ public class MovementsConstraints implements ConfigurationSerializable {
 		return down;
 	}
 
-	public double getYawLeft() {
+	public float getYawLeft() {
 		return yawLeft;
 	}
 
-	public double getYawRight() {
+	public float getYawRight() {
 		return yawRight;
 	}
 
-	public double getPitchUp() {
+	public float getPitchUp() {
 		return pitchUp;
 	}
 
-	public double getPitchDown() {
+	public float getPitchDown() {
 		return pitchDown;
 	}
 
-	public double getRollLeft() {
+	public float getRollLeft() {
 		return rollLeft;
 	}
 
-	public double getRollRight() {
+	public float getRollRight() {
 		return rollRight;
 	}
 
@@ -108,8 +108,19 @@ public class MovementsConstraints implements ConfigurationSerializable {
 	private static double getDouble(Object object) {
 		if (object instanceof Integer) {
 			return (Integer) object;
+		} else if (object instanceof Float) {
+			return (Float) object;
 		}
 		return (Double) object;
+	}
+
+	private static float getFloat(Object object) {
+		if (object instanceof Integer) {
+			return (Integer) object;
+		} else if (object instanceof Double) {
+			return ((Double) object).floatValue();
+		}
+		return (Float) object;
 	}
 
 	public static MovementsConstraints deserialize(Map<String, Object> map) {
@@ -120,12 +131,48 @@ public class MovementsConstraints implements ConfigurationSerializable {
 		constraints.right = getDouble(map.getOrDefault("right", 0.0));
 		constraints.up = getDouble(map.getOrDefault("up", 0.0));
 		constraints.down = getDouble(map.getOrDefault("down", 0.0));
-		constraints.yawLeft = getDouble(map.getOrDefault("yawLeft", 0.0));
-		constraints.yawRight = getDouble(map.getOrDefault("yawRight", 0.0));
-		constraints.pitchUp = getDouble(map.getOrDefault("pitchUp", 0.0));
-		constraints.pitchDown = getDouble(map.getOrDefault("pitchDown", 0.0));
-		constraints.rollLeft = getDouble(map.getOrDefault("rollLeft", 0.0));
-		constraints.rollRight = getDouble(map.getOrDefault("rollRight", 0.0));
+		constraints.yawLeft = getFloat(map.getOrDefault("yawLeft", 0.0));
+		constraints.yawRight = getFloat(map.getOrDefault("yawRight", 0.0));
+		constraints.pitchUp = getFloat(map.getOrDefault("pitchUp", 0.0));
+		constraints.pitchDown = getFloat(map.getOrDefault("pitchDown", 0.0));
+		constraints.rollLeft = getFloat(map.getOrDefault("rollLeft", 0.0));
+		constraints.rollRight = getFloat(map.getOrDefault("rollRight", 0.0));
 		return constraints;
+	}
+
+	public double getOnX(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return right;
+		return left;
+	}
+
+	public double getOnY(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return up;
+		return down;
+	}
+
+	public double getOnZ(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return forward;
+		return backward;
+	}
+
+	public float getOnYaw(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return yawRight;
+		return yawLeft;
+	}
+
+	public float getOnPitch(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return pitchUp;
+		return pitchDown;
+	}
+
+	public float getOnRoll(double sens) {
+		if (sens == 0) return 0;
+		if (sens > 0) return rollRight;
+		return rollLeft;
 	}
 }

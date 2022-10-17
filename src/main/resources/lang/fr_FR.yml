@@ -42,6 +42,11 @@ transport:
     removal_failed: "La suppression du véhicule a échoué"
     teleported: "Véhicule %vehicle% téléporté"
     respawned: "Véhicule %vehicle% réapparu"
+    movement:
+      moving: "Véhicule %vehicle% se déplace vers %destination%"
+      stopped: "Véhicule %vehicle% arrêté"
+      arrived: "Véhicule %vehicle% arrivé à destination"
+      not_moving: "Le véhicule %vehicle% ne se déplace pas"
 
   part:
     unknown: "Partie de véhicule %part% inconnue"

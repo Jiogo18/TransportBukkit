@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import fr.jarven.transportbukkit.TransportPlugin;
+import fr.jarven.transportbukkit.tasks.MovementTask;
 import fr.jarven.transportbukkit.tasks.SaveTask;
 import fr.jarven.transportbukkit.templates.VehicleTemplate;
 
@@ -111,6 +112,7 @@ public class VehicleManager {
 
 	public void onDisable() {
 		SaveTask.onDisable();
+		MovementTask.onDisable();
 	}
 
 	public Optional<Seat> getSeatByPassenger(Entity entity) {

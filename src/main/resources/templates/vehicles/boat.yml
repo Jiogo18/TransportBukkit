@@ -68,20 +68,24 @@ max_speed:
   right: 0.2
   up: 0.5
   down: 0.5
-  yawLeft: 0.2
-  yawRight: 0.2
-  pitchUp: 0.2
-  pitchDown: 0.2
+  yawLeft: 2
+  yawRight: 2
+  pitchUp: 2
+  pitchDown: 2
+  rollLeft: 2
+  rollRight: 2
 
 max_acceleration:
   ==: fr.jarven.transportbukkit.utils.MovementsConstraints
-  forward: 0.1
-  backward: 0.05
-  left: 0.05
-  right: 0.05
-  up: 0.05
-  down: 0.05
+  forward: 0.02
+  backward: 0.01
+  left: 0.005
+  right: 0.005
+  up: 0.01
+  down: 0.01
   yawLeft: 0.1
   yawRight: 0.1
   pitchUp: 0.1
   pitchDown: 0.1
+  rollLeft: 0.1
+  rollRight: 0.1

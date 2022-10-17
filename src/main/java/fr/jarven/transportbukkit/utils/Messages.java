@@ -44,6 +44,10 @@ public class Messages {
 		VEHICLE_REMOVAL_FAILED("transport.vehicle.removal_failed"),
 		VEHICLE_TELEPORTED("transport.vehicle.teleported"),
 		VEHICLE_RESPAWNED("transport.vehicle.respawned"),
+		VEHICLE_MOVING("transport.vehicle.movement.moving"),
+		VEHICLE_STOPPED("transport.vehicle.movement.stopped"),
+		VEHICLE_ARRIVED("transport.vehicle.movement.arrived"),
+		VEHICLE_NOT_MOVING("transport.vehicle.movement.not_moving"),
 
 		TEMPLATE_VEHICLE_UNKNOWN("transport.template.vehicle.unknown"),
 		TEMPLATE_VEHICLE_LIST("transport.template.vehicle.list"),

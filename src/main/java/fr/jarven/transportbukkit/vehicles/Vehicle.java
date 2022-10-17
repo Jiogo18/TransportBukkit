@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import fr.jarven.transportbukkit.TransportPlugin;
+import fr.jarven.transportbukkit.tasks.MovementTask;
 import fr.jarven.transportbukkit.tasks.SaveTask;
 import fr.jarven.transportbukkit.templates.PartTemplate;
 import fr.jarven.transportbukkit.templates.SeatProperties;
@@ -32,7 +33,6 @@ public class Vehicle {
 	private final List<Seat> seats = new ArrayList<>();
 	private LocationRollable location;
 	private LocationRollable locationWithOffset;
-	private LocationRollable destination;
 	private MovementsVector velocity = new MovementsVector(0, 0, 0);
 	private MovementsVector acceleration = new MovementsVector(0, 0, 0);
 	private long saveTimestamp = 0;
@@ -257,7 +257,7 @@ public class Vehicle {
 				Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> updateFakeLocation(), 2L);
 				Bukkit.getScheduler().runTaskLater(TransportPlugin.getInstance(), () -> updateFakeLocation(), 4L);
 				updateRealTask = null;
-			}, 40L); // Update the real location (not a fake packet) every second
+			}, 200L); // Update the real location (not a fake packet) every 10 seconds
 		}
 	}
 
@@ -274,18 +274,23 @@ public class Vehicle {
 		return new LocationRollable(locationWithOffset); // clone
 	}
 
-	public void setDestination(LocationRollable location) {
-		this.destination = location;
+	public void setDestination(LocationRollable destination) {
+		if (destination != null && this.location != null && this.location.getWorld().getName().equals(destination.getWorld().getName())) {
+			MovementTask.initiateMovements(this, destination, 0);
+		} else {
+			MovementTask.stopMovements(this);
+		}
 	}
+
 	public Location getDestination() {
-		return destination;
+		return MovementTask.getDestination(this);
 	}
 
-	void setSpeed(MovementsVector speed) {
-		this.velocity = speed;
+	void setVelocity(MovementsVector velocity) {
+		this.velocity = velocity;
 	}
 
-	public MovementsVector getAllSpeed() {
+	public MovementsVector getAllVelocity() {
 		return velocity;
 	}
 

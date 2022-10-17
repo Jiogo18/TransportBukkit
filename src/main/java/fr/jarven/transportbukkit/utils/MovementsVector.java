@@ -170,4 +170,109 @@ public class MovementsVector extends Vector {
 
 		return hash;
 	}
+
+	public MovementsVector add(MovementsVector other) {
+		super.add(other);
+		this.yaw += other.yaw;
+		this.pitch += other.pitch;
+		this.roll += other.roll;
+		return this;
+	}
+
+	public MovementsVector substract(MovementsVector other) {
+		super.subtract(other);
+		this.yaw -= other.yaw;
+		this.pitch -= other.pitch;
+		this.roll -= other.roll;
+		return this;
+	}
+
+	public MovementsVector multiply(MovementsVector other) {
+		super.multiply(other);
+		this.yaw *= other.yaw;
+		this.pitch *= other.pitch;
+		this.roll *= other.roll;
+		return this;
+	}
+
+	public MovementsVector divide(MovementsVector other) {
+		super.divide(other);
+		// if x is nan then
+		if (getX() == Double.NaN) setX(0);
+		if (getY() == Double.NaN) setY(0);
+		if (getZ() == Double.NaN) setZ(0);
+		if (this.yaw != 0) this.yaw /= other.yaw;
+		if (this.pitch != 0) this.pitch /= other.pitch;
+		if (this.roll != 0) this.roll /= other.roll;
+		return this;
+	}
+
+	@Override
+	public MovementsVector multiply(float number) {
+		super.multiply(number);
+		this.yaw *= number;
+		this.pitch *= number;
+		this.roll *= number;
+		return this;
+	}
+
+	private double divideByNonZeroAbs(double value, double divider) {
+		if (divider == 0) {
+			return 0;
+		} else {
+			return Math.abs(value / divider);
+		}
+	}
+
+	private double max(double... ds) {
+		double max = 0;
+		for (double d : ds) {
+			max = Math.max(max, d);
+		}
+		return max;
+	}
+
+	private double maxAbs(double... ds) {
+		double max = 0;
+		for (double d : ds) {
+			double abs = Math.abs(d);
+			if (abs > max && abs != Double.POSITIVE_INFINITY) {
+				max = abs;
+			}
+		}
+		return max;
+	}
+
+	public double biggestFactor(MovementsConstraints constraints) {
+		return max(
+			divideByNonZeroAbs(this.getForwardBackward(), Math.min(Math.abs(constraints.getForward()), Math.abs(constraints.getBackward()))),
+			divideByNonZeroAbs(this.getLeftRight(), Math.min(Math.abs(constraints.getRight()), Math.abs(constraints.getLeft()))),
+			divideByNonZeroAbs(this.getUpDown(), Math.min(Math.abs(constraints.getUp()), Math.abs(constraints.getDown()))),
+			divideByNonZeroAbs(this.getYaw(), Math.min(Math.abs(constraints.getYawLeft()), Math.abs(constraints.getYawRight()))),
+			divideByNonZeroAbs(this.getPitch(), Math.min(Math.abs(constraints.getPitchUp()), Math.abs(constraints.getPitchDown()))),
+			divideByNonZeroAbs(this.getRoll(), Math.min(Math.abs(constraints.getRollLeft()), Math.abs(constraints.getRollRight()))));
+	}
+
+	public void update(MovementsVector other) {
+		this.setX(other.getX());
+		this.setY(other.getY());
+		this.setZ(other.getZ());
+		this.setYaw(other.getYaw());
+		this.setPitch(other.getPitch());
+		this.setRoll(other.getRoll());
+	}
+
+	public MovementsVector abs() {
+		this.setX(Math.abs(this.getX()));
+		this.setY(Math.abs(this.getY()));
+		this.setZ(Math.abs(this.getZ()));
+		this.setYaw(Math.abs(this.getYaw()));
+		this.setPitch(Math.abs(this.getPitch()));
+		this.setRoll(Math.abs(this.getRoll()));
+		return this;
+	}
+
+	public double getMaxAbs() {
+		return maxAbs(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.getRoll());
+	}
 }

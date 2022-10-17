@@ -42,6 +42,11 @@ transport:
     removal_failed: "Vehicle removal failed"
     teleported: "Vehicle %vehicle% teleported"
     respawned: "Vehicle %vehicle% respawned"
+    movement:
+      moving: "Vehicle %vehicle% is moving to %destination%"
+      stopped: "Vehicle %vehicle% stopped"
+      arrived: "Vehicle %vehicle% arrived at destination"
+      not_moving: "Vehicle %vehicle% is not moving"
 
   part:
     unknown: "Vehicle part %part% unknown"

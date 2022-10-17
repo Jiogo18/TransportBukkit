@@ -11,6 +11,7 @@ import fr.jarven.transportbukkit.commands.transport.CommandTransportDelete;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportHelp;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportInfo;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportList;
+import fr.jarven.transportbukkit.commands.transport.CommandTransportMovement;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportReload;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportRespawn;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportSit;
@@ -38,6 +39,7 @@ public class CommandManager {
 			.then(new CommandTransportTpHere().getArgumentTree().withRequirement(requireAdmin))
 			.then(new CommandTransportSit().getArgumentTree().withRequirement(requireWatcher))
 			.then(new CommandTransportRespawn().getArgumentTree().withRequirement(requireAdmin))
+			.then(new CommandTransportMovement().getArgumentTree().withRequirement(requireAdmin))
 			.register();
 	}
 

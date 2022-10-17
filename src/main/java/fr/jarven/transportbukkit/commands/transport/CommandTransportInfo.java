@@ -58,7 +58,7 @@ public class CommandTransportInfo extends CommandTools {
 			.replace("%location%", toReadbleString(vehicle.getLocation()))
 			.replace("%destination%", toReadbleString(vehicle.getDestination()))
 			.replace("%speed%", String.valueOf(vehicle.getVelocity()))
-			.replace("%fullspeed%", toReadbleString(vehicle.getAllSpeed()))
+			.replace("%fullspeed%", toReadbleString(vehicle.getAllVelocity()))
 			.replace("%acceleration%", String.valueOf(vehicle.getAcceleration()))
 			.replace("%fullacceleration%", toReadbleString(vehicle.getAllAcceleration()))
 			.replace("%seats%", String.valueOf(vehicle.getSeats().size()))

@@ -4,11 +4,19 @@ import org.bukkit.Location;
 
 import java.util.Map;
 
+import dev.jorel.commandapi.wrappers.Rotation;
+
 public class LocationRollable extends Location {
 	private float roll;
 
 	public LocationRollable(Location location) {
 		this(location, 0);
+	}
+
+	public LocationRollable(Location location, Rotation rotation) {
+		this(location, 0);
+		this.setYaw(rotation.getYaw());
+		this.setPitch(rotation.getPitch());
 	}
 
 	public LocationRollable(Location location, float roll) {
@@ -76,5 +84,30 @@ public class LocationRollable extends Location {
 		Location location = Location.deserialize(args);
 		double roll = (double) args.getOrDefault("roll", 0.0);
 		return new LocationRollable(location, (float) roll);
+	}
+
+	public boolean almostEquals(LocationRollable destination, double d, float angle) {
+		if (!this.getWorld().getName().equals(destination.getWorld().getName())) return false;
+
+		if (Math.abs(this.getX() - destination.getX()) > d) return false;
+		if (Math.abs(this.getY() - destination.getY()) > d) return false;
+		if (Math.abs(this.getZ() - destination.getZ()) > d) return false;
+
+		if (Math.abs(this.getYaw() - destination.getYaw()) > angle) return false;
+		if (Math.abs(this.getPitch() - destination.getPitch()) > angle) return false;
+		if (Math.abs(this.getRoll() - destination.getRoll()) > angle) return false;
+
+		return true;
+	}
+
+	@Override
+	public MovementsVector toVector() {
+		return new MovementsVector(
+			this.getX(),
+			this.getY(),
+			this.getZ(),
+			this.getYaw(),
+			this.getPitch(),
+			this.getRoll());
 	}
 }

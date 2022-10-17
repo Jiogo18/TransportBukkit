@@ -128,7 +128,7 @@ public class AnimationTemplate {
 				value = part.getVehicle().getAllAcceleration().getRotationDistanceWithOrigin() * step;
 				break;
 			case ROTATION_VELOCITY:
-				value = part.getVehicle().getAllSpeed().getRotationDistanceWithOrigin() * step;
+				value = part.getVehicle().getAllVelocity().getRotationDistanceWithOrigin() * step;
 				break;
 			case CONSTANT:
 				value = step;
