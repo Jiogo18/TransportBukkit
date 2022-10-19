@@ -2,14 +2,18 @@ package fr.jarven.transportbukkit.vehicles;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import fr.jarven.transportbukkit.TransportPlugin;
@@ -18,8 +22,9 @@ import fr.jarven.transportbukkit.tasks.SaveTask;
 import fr.jarven.transportbukkit.templates.VehicleTemplate;
 
 public class VehicleManager {
-	final SortedSet<Vehicle> vehicles = new TreeSet<>((a, b) -> a.getName().compareTo(b.getName()));
+	private final SortedSet<Vehicle> vehicles = new TreeSet<>((a, b) -> a.getName().compareTo(b.getName()));
 	private final File vehicleFolder;
+	private final Map<UUID, Seat> seatsByPlayer = new HashMap<>();
 
 	public VehicleManager() {
 		this.vehicleFolder = new File(TransportPlugin.getInstance().getDataFolder(), "vehicles");
@@ -107,22 +112,33 @@ public class VehicleManager {
 			vehiclesToRemove.forEach(this::removeVehicleDontDeleteFile);
 			newVehicles.forEach(vehicles::add); // Add without dirty
 		}
+
+		vehicles.forEach(Vehicle::updatePassengers);
+
 		TransportPlugin.LOGGER.info("Loaded " + vehicles.size() + " vehicles");
 	}
 
 	public void onDisable() {
+		seatsByPlayer.clear();
 		SaveTask.onDisable();
 		MovementTask.onDisable();
 	}
 
 	public Optional<Seat> getSeatByPassenger(Entity entity) {
 		if (entity.getVehicle() == null) return Optional.empty();
+		if (seatsByPlayer.containsKey(entity.getUniqueId())) {
+			return Optional.of(seatsByPlayer.get(entity.getUniqueId()));
+		}
 		return vehicles
 			.stream()
 			.map(Vehicle::getSeats)
 			.flatMap(List::stream)
 			.filter(seat -> seat.getPassenger().isPresent() && seat.getPassenger().get().getUniqueId().equals(entity.getUniqueId()))
 			.findFirst();
+	}
+
+	public Map<UUID, Seat> getSeatByPassengerPlayer() {
+		return seatsByPlayer;
 	}
 
 	public Optional<Vehicle> getVehicleByEntity(Entity entity) {
@@ -140,5 +156,24 @@ public class VehicleManager {
 						   .anyMatch(seat -> entity.getUniqueId().equals(seat.getEntityUUID()));
 			})
 			.findFirst();
+	}
+
+	protected void onSeatEnter(Entity entity, Seat seat) {
+		if (entity instanceof Player) {
+			seatsByPlayer.put(entity.getUniqueId(), seat);
+		}
+	}
+
+	protected void onSeatExit(Entity entity) {
+		if (entity instanceof Player) {
+			seatsByPlayer.remove(entity.getUniqueId());
+		}
+	}
+
+	public void onPlayerJoin(Player player) {
+		Optional<Seat> seat = getSeatByPassenger(player);
+		if (seat.isPresent()) {
+			seatsByPlayer.put(player.getUniqueId(), seat.get());
+		}
 	}
 }

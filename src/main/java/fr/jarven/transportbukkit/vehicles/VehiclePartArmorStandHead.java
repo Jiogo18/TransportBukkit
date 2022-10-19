@@ -10,7 +10,6 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import java.util.UUID;
 
@@ -155,6 +154,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		}
 	}
 
+	@Override
 	public void updateRealLocation() {
 		if (isEntityValid()) {
 			LocationRollable loc = getLocation();
@@ -181,7 +181,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 							   .setZ(Math.toRadians(roll)));
 			}
 
-			entity.teleport(loc, TeleportCause.PLUGIN);
+			template.teleport(entity, loc);
 		}
 	}
 

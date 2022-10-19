@@ -28,8 +28,13 @@ inventory:
     custom_model_data: 1005
 
 # Movement per tick
+# MOVE_ACCELERATION, // Faster when accelerating...
+# MOVE_VELOCITY, // Faster when going faster...
+# ROTATION_ACCELERATION, // Faster when accelerating...
+# ROTATION_VELOCITY, // Faster when rotating faster...
+# CONSTANT // Constant speed
 animation:
   ROLL:
-    propotional: CONSTANT
+    propotional: MOVE_VELOCITY
     start: 0
-    step: 18
+    step: 180

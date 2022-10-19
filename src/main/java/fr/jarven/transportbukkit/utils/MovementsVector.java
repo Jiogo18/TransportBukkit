@@ -275,4 +275,32 @@ public class MovementsVector extends Vector {
 	public double getMaxAbs() {
 		return maxAbs(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.getRoll());
 	}
+
+	public MovementsVector rotateAsAbsolute(LocationRollable rotation) {
+		rotateAroundX(Math.toRadians(rotation.getPitch()));
+		rotateAroundZ(Math.toRadians(rotation.getRoll()));
+		rotateAroundY(-Math.toRadians(rotation.getYaw()));
+		return this;
+	}
+
+	public MovementsVector rotateAsRelative(LocationRollable rotation) {
+		rotateAroundY(Math.toRadians(rotation.getYaw()));
+		rotateAroundZ(-Math.toRadians(rotation.getRoll()));
+		rotateAroundX(-Math.toRadians(rotation.getPitch()));
+		return this;
+	}
+
+	public MovementsVector rotateAsAbsolute(MovementsVector rotation) {
+		rotateAroundX(Math.toRadians(rotation.getPitch()));
+		rotateAroundZ(Math.toRadians(rotation.getRoll()));
+		rotateAroundY(-Math.toRadians(rotation.getYaw()));
+		return this;
+	}
+
+	public MovementsVector rotateAsRelative(MovementsVector rotation) {
+		rotateAroundY(Math.toRadians(rotation.getYaw()));
+		rotateAroundZ(-Math.toRadians(rotation.getRoll()));
+		rotateAroundX(-Math.toRadians(rotation.getPitch()));
+		return this;
+	}
 }

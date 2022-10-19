@@ -147,10 +147,10 @@ public class Vehicle {
 	}
 
 	public boolean addPassenger(Entity passenger) {
-		if (locked) {
-			return false;
-		}
+		return !locked && addPassengerForce(passenger);
+	}
 
+	public boolean addPassengerForce(Entity passenger) {
 		// A seat without passenger (sorted randomly)
 		Optional<Seat> randomSeat =
 			seats
@@ -168,7 +168,7 @@ public class Vehicle {
 	}
 
 	public boolean addPassenger(Entity entity, Seat seat) {
-		if (locked || seat.hasPassenger()) {
+		if (locked || seat == null || seat.hasPassenger()) {
 			return false;
 		}
 		seat.addPassenger(entity);
@@ -176,9 +176,10 @@ public class Vehicle {
 	}
 
 	public boolean removePassenger(Entity passenger) {
-		if (locked) {
-			return false;
-		}
+		return !locked && removePassengerForce(passenger);
+	}
+
+	public boolean removePassengerForce(Entity passenger) {
 		for (Seat seat : seats) {
 			if (seat.removePassenger(passenger)) {
 				return true;
@@ -187,12 +188,21 @@ public class Vehicle {
 		return false;
 	}
 
+	protected void updatePassengers() {
+		for (Seat seat : seats) {
+			if (seat.hasPassenger()) {
+				TransportPlugin.getVehicleManager().onSeatEnter(seat.getPassenger().orElseThrow(), seat);
+			}
+		}
+	}
+
 	public boolean isLocked() {
 		return this.locked;
 	}
 
 	public void lock(boolean locked) {
 		this.locked = locked;
+		makeLazyDirty();
 	}
 
 	public boolean isFull() {
@@ -239,7 +249,7 @@ public class Vehicle {
 			part.updateFakeLocation();
 		}
 		for (Seat seat : seats) {
-			seat.updateFakeLocation();
+			seat.updateRealLocation();
 		}
 	}
 

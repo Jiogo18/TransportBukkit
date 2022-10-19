@@ -1,7 +1,5 @@
 package fr.jarven.transportbukkit.vehicles;
 
-import org.bukkit.Sound;
-
 import fr.jarven.transportbukkit.tasks.MovementTask;
 import fr.jarven.transportbukkit.utils.LocationRollable;
 import fr.jarven.transportbukkit.utils.MovementsConstraints;
@@ -37,9 +35,7 @@ public class VehicleMover {
 		MovementsVector currentLocation = vehicle.getLocation().toVector();
 		MovementsVector destinationLocation = destination.toVector();
 		MovementsVector distanceToDestination = new MovementsVector(destinationLocation).substract(currentLocation);
-		distanceToDestination.rotateAroundY(Math.toRadians(currentLocation.getYaw()));
-		distanceToDestination.rotateAroundZ(-Math.toRadians(currentLocation.getRoll()));
-		distanceToDestination.rotateAroundX(-Math.toRadians(currentLocation.getPitch()));
+		distanceToDestination.rotateAsRelative(currentLocation);
 		MovementsVector directionToDestination = new MovementsVector(
 			Math.signum(distanceToDestination.getX()),
 			Math.signum(distanceToDestination.getY()),
@@ -113,7 +109,6 @@ public class VehicleMover {
 
 		if (distanceToDestination < 1) { // Slow down
 			acceleration *= distanceToDestination;
-			vehicle.getLocation().getWorld().playSound(vehicle.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.1f, 0.5f);
 		}
 
 		return acceleration;
@@ -134,11 +129,11 @@ public class VehicleMover {
 			return 0;
 		}
 
-		double sinDistance = Math.sin(Math.toRadians(distanceToDestination));
-		float distance = (float) Math.toDegrees(Math.asin(sinDistance));
+		// center distanceToDestination between -180 and 180 : | modulo(x-90,360)-180 | -90
+		float distance = Math.abs(distanceToDestination - 360 * (float) Math.floor((distanceToDestination - 90) / 360) - 270) - 90;
+
 		if (distance < 10) { // Slow down
 			acceleration *= distance * 0.1;
-			vehicle.getLocation().getWorld().playSound(vehicle.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.1f, 0.5f);
 		}
 
 		return acceleration;
@@ -151,9 +146,7 @@ public class VehicleMover {
 		velocity.add(acceleration);
 		velocity.applyMaximum(vehicle.getTemplate().getMaxSpeed());
 		MovementsVector velocityAbsolue = new MovementsVector(velocity);
-		velocityAbsolue.rotateAroundX(Math.toRadians(location.getPitch()));
-		velocityAbsolue.rotateAroundZ(Math.toRadians(location.getRoll()));
-		velocityAbsolue.rotateAroundY(-Math.toRadians(location.getYaw()));
+		velocityAbsolue.rotateAsAbsolute(location);
 		location.add(velocityAbsolue);
 		vehicle.teleport(location);
 	}
@@ -214,7 +207,6 @@ public class VehicleMover {
 
 	public void tickMovement() {
 		if (!canMove()) {
-			vehicle.getLocation().getWorld().playSound(vehicle.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.2f, 10);
 			MovementTask.stopMovements(vehicle);
 			return;
 		}

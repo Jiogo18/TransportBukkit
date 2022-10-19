@@ -3,6 +3,7 @@
 
 name: "boat"
 
+# Parts of the vehicle
 parts:
  - boat_front
  - boat_back
@@ -17,6 +18,10 @@ offset:
   pitch: 0
   roll: 0
 
+# Prevent players to enter and exit the vehicle while it's moving
+lock_when_moving: true
+
+# Seats for entities
 seats:
   - type: PASSENGER
     offset:

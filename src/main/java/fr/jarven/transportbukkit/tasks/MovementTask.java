@@ -50,8 +50,10 @@ public class MovementTask {
 		if (!vehicles.containsKey(vehicle)) {
 			if (VehicleMover.haveToMove(vehicle, destination)) {
 				vehicles.put(vehicle, new VehicleMover(vehicle, destination, velocityAtEnd));
+			} else {
+				return;
+				// Else, don't have to move to the destination => do nothing
 			}
-			// Else, don't have to move to the destination => do nothing
 		} else {
 			VehicleMover mover = vehicles.get(vehicle);
 			if (VehicleMover.canMoveTo(vehicle, destination)) {
@@ -61,6 +63,11 @@ public class MovementTask {
 			}
 			vehicles.get(vehicle).setDestination(destination, velocityAtEnd);
 		}
+
+		if (vehicle.getTemplate().isLockWhenMoving()) {
+			vehicle.lock(true);
+		}
+
 		if (task == null) {
 			startTask();
 		}
@@ -73,6 +80,9 @@ public class MovementTask {
 			VehicleMover mover = vehicles.get(vehicle);
 			vehicles.remove(vehicle);
 			mover.stopMovement();
+			if (vehicle.getTemplate().isLockWhenMoving()) {
+				vehicle.lock(false);
+			}
 		}
 		if (vehicles.isEmpty()) {
 			stopTask();

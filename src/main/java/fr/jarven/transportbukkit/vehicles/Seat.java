@@ -1,19 +1,12 @@
 package fr.jarven.transportbukkit.vehicles;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.SeatProperties;
@@ -24,16 +17,6 @@ public class Seat {
 	private SeatProperties template;
 	private Entity seatEntity;
 	private UUID seatEntityUuid;
-
-	private static final Method[] methods = ((Supplier<Method[]>) () -> {
-		try {
-			Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
-			return new Method[] {
-				getHandle, getHandle.getReturnType().getDeclaredMethod("setPositionRotation", double.class, double.class, double.class, float.class, float.class)};
-		} catch (Exception ex) {
-			return null;
-		}
-	}).get();
 
 	protected Seat(Vehicle vehicle, SeatProperties template) {
 		this.vehicle = vehicle;
@@ -72,34 +55,9 @@ public class Seat {
 		}
 	}
 
-	protected void updateFakeLocation() {
-		if (seatEntity != null && seatEntity.isValid()) {
-			Location loc = getLocation();
-			PacketContainer fakeTp = new PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT);
-			fakeTp.getIntegers().write(0, seatEntity.getEntityId());
-			fakeTp.getDoubles()
-				.write(0, loc.getX())
-				.write(1, loc.getY())
-				.write(2, loc.getZ());
-			fakeTp.getBytes()
-				.write(0, (byte) (loc.getYaw() * 256.0F / 360.0F))
-				.write(1, (byte) (loc.getPitch() * 256.0F / 360.0F));
-			ProtocolManager protocolManager = TransportPlugin.getProtocolManager();
-			protocolManager.broadcastServerPacket(fakeTp);
-		}
-	}
-
 	protected void updateRealLocation() {
 		if (seatEntity != null && seatEntity.isValid()) {
-			Location loc = getLocation();
-			if (hasPassenger()) {
-				try {
-					methods[1].invoke(methods[0].invoke(seatEntity), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-				} catch (Exception ex) {
-				}
-			} else {
-				seatEntity.teleport(loc, TeleportCause.PLUGIN);
-			}
+			template.teleport(seatEntity, getLocation());
 		}
 	}
 
@@ -124,15 +82,33 @@ public class Seat {
 	}
 
 	public boolean addPassenger(Entity passenger) {
-		return hasSeat() && !hasPassenger() && this.seatEntity.addPassenger(passenger);
+		if (!hasSeat()) return false;
+		boolean alreadyIn = seatEntity.getPassengers().stream().anyMatch(p -> p.getUniqueId().equals(passenger.getUniqueId()));
+		if (hasPassenger() && !alreadyIn) return false;
+		if (!this.seatEntity.addPassenger(passenger)) return false;
+		TransportPlugin.getVehicleManager().onSeatEnter(passenger, this);
+		return true;
 	}
 
 	public boolean removePassenger(Entity passenger) {
-		return hasSeat() && this.seatEntity.removePassenger(passenger);
+		if (hasSeat() && this.seatEntity.removePassenger(passenger)) {
+			TransportPlugin.getVehicleManager().onSeatExit(passenger);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean ejectPassenger() {
-		return hasSeat() && this.seatEntity.eject();
+		List<Entity> passengers = this.seatEntity.getPassengers();
+		if (hasSeat() && this.seatEntity.eject()) {
+			for (Entity passenger : passengers) {
+				TransportPlugin.getVehicleManager().onSeatExit(passenger);
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public Optional<Entity> getPassenger() {

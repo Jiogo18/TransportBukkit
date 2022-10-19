@@ -1,6 +1,5 @@
 package fr.jarven.transportbukkit.commands.transport;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
 import java.util.Optional;
@@ -18,9 +17,13 @@ public class CommandTransportSit extends CommandTools {
 		return (LiteralArgument) literal("sit")
 			.then(literal("enter")
 					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return enterVehicle(sender, (Vehicle) args[0]); })))
+							.executesNative((sender, args) -> { return enterVehicle(sender, (Vehicle) args[0], false); })
+							.then(literal("--force-lock")
+									.executesNative((sender, args) -> { return enterVehicle(sender, (Vehicle) args[0], true); }))))
 			.then(literal("exit")
-					.executesNative((sender, args) -> { return exitVehicle(sender); }))
+					.executesNative((sender, args) -> { return exitVehicle(sender, false); })
+					.then(literal("--force-lock")
+							.executesNative((sender, args) -> { return exitVehicle(sender, true); })))
 			.then(literal("lock")
 					.then(vehicleArgument("vehicle_name")
 							.executesNative((sender, args) -> { return lockVehicle(sender, (Vehicle) args[0]); })))
@@ -29,48 +32,59 @@ public class CommandTransportSit extends CommandTools {
 							.executesNative((sender, args) -> { return unlockVehicle(sender, (Vehicle) args[0]); })));
 	}
 
-	public int enterVehicle(NativeProxyCommandSender proxy, Vehicle vehicle) {
-		CommandSender puppet = proxy.getCallee();
-		if (puppet instanceof Entity) {
-			if (vehicle.isLocked()) {
-				Resources.VEHICLE_LOCKED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
-				return 0;
-			}
-			if (vehicle.addPassenger((Entity) puppet)) {
-				Resources.VEHICLE_ENTERED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
-				return 1;
-			} else {
-				Resources.VEHICLE_FULL.replace("%vehicle%", vehicle.getName()).send(proxy);
-				return 0;
-			}
-		} else {
+	public int enterVehicle(NativeProxyCommandSender proxy, Vehicle vehicle, boolean force) {
+		if (!(proxy.getCallee() instanceof Entity)) {
 			Resources.NOT_AN_ENTITY.send(proxy);
+			return 0;
+		}
+		Entity puppet = (Entity) proxy.getCallee();
+
+		boolean success;
+		if (force) {
+			success = vehicle.addPassengerForce(puppet);
+		} else if (vehicle.isLocked()) {
+			Resources.VEHICLE_LOCKED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
+			return 0;
+		} else {
+			success = vehicle.addPassenger(puppet);
+		}
+		if (success) {
+			Resources.VEHICLE_ENTERED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
+			return 1;
+		} else {
+			Resources.VEHICLE_FULL.replace("%vehicle%", vehicle.getName()).send(proxy);
 			return 0;
 		}
 	}
 
-	public int exitVehicle(NativeProxyCommandSender proxy) {
-		if (proxy.getCallee() instanceof Entity) {
-			Entity puppet = (Entity) proxy.getCallee();
-			Optional<Seat> seat = TransportPlugin.getVehicleManager().getSeatByPassenger(puppet);
-			if (seat.isPresent()) {
-				Vehicle vehicle = seat.get().getVehicle();
-				if (vehicle.isLocked()) {
-					Resources.VEHICLE_LOCKED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
-					return 0;
-				} else if (vehicle.removePassenger(puppet)) {
-					Resources.VEHICLE_EXITED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
-					return 1;
-				} else {
-					Resources.NOT_IN_VEHICLE.replace("%player%", puppet.getName()).send(proxy);
-					return 0;
-				}
-			} else {
-				Resources.NOT_IN_VEHICLE.replace("%player%", puppet.getName()).send(proxy);
-				return 0;
-			}
-		} else {
+	public int exitVehicle(NativeProxyCommandSender proxy, boolean force) {
+		if (!(proxy.getCallee() instanceof Entity)) {
 			Resources.NOT_AN_ENTITY.send(proxy);
+			return 0;
+		}
+		Entity puppet = (Entity) proxy.getCallee();
+
+		Optional<Seat> seat = TransportPlugin.getVehicleManager().getSeatByPassenger(puppet);
+		if (!seat.isPresent()) {
+			Resources.NOT_IN_VEHICLE.replace("%player%", puppet.getName()).send(proxy);
+			return 0;
+		}
+
+		Vehicle vehicle = seat.get().getVehicle();
+		boolean success;
+		if (force) {
+			success = vehicle.removePassengerForce(puppet);
+		} else if (vehicle.isLocked()) {
+			Resources.VEHICLE_LOCKED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
+			return 0;
+		} else {
+			success = vehicle.removePassenger(puppet);
+		}
+		if (success) {
+			Resources.VEHICLE_EXITED.replace("%vehicle%", vehicle.getName()).replace("%player%", puppet.getName()).send(proxy);
+			return 1;
+		} else {
+			Resources.NOT_IN_VEHICLE.replace("%player%", puppet.getName()).send(proxy);
 			return 0;
 		}
 	}

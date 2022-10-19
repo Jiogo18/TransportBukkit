@@ -16,6 +16,7 @@ public class VehicleTemplate {
 	private final String name;
 	private final List<PartTemplate> parts = new ArrayList<>();
 	private final List<SeatProperties> seats = new ArrayList<>();
+	private boolean lockWhenMoving;
 	private MovementsVector offset;
 	private final MovementsConstraints maxSpeed;
 	private final MovementsConstraints maxAcceleration;
@@ -53,6 +54,10 @@ public class VehicleTemplate {
 
 	public MovementsConstraints getMaxAcceleration() {
 		return maxAcceleration;
+	}
+
+	public boolean isLockWhenMoving() {
+		return lockWhenMoving;
 	}
 
 	public static VehicleTemplate fromFile(File file) {
@@ -103,6 +108,8 @@ public class VehicleTemplate {
 			vehicleTemplate.seats.add(seatTemplate);
 		}
 
+		vehicleTemplate.lockWhenMoving = config.getBoolean("lock_when_moving", false);
+
 		return vehicleTemplate;
 	}
 
@@ -119,6 +126,7 @@ public class VehicleTemplate {
 				this.seats.add(template.seats.get(i));
 			}
 		}
+		this.lockWhenMoving = template.lockWhenMoving;
 		this.offset = template.offset;
 		this.maxSpeed.update(template.maxSpeed);
 		this.maxAcceleration.update(template.maxAcceleration);
