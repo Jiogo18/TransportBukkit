@@ -62,3 +62,8 @@ The plugin is reloadable, which means /reload won't break it (but avoid using /r
 
 `/transport sit lock <name>`<br/>
 `/transport sit unlock <name>`<br/>
+
+### Move a vehicle to a specific location
+
+`/transport movement move_here <name> (x) (y) (z) (yaw) (pitch) (roll)`<br/>
+`/transport movement stop <name>`<br/>

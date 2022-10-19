@@ -37,7 +37,7 @@ dependencies {
 }
 
 group = 'fr.jarven'
-version = '0.0.1'
+version = '1.0.0'
 description = 'TransportBukkit'
 archivesBaseName='TransportBukkit'
 java.sourceCompatibility = JavaVersion.VERSION_1_8

@@ -1,10 +1,9 @@
-# Modifié par Jarven le 2022-10-06.
+# Modifié par Jarven le 2022-10-20.
 # Vous pouvez désactiver l'actualisation automatique si vous modifiez ce fichier manuellement.
 version.autoupdate: true
 version.warnings: true
-version.revision: "2022-10-06"
+version.revision: "2022-10-20"
 
-# Commandes : help, reload, list, info
 transport:
   help:
     body: |-
@@ -12,10 +11,17 @@ transport:
       §7Version : §f%version%
       §7Auteur : §f%author%
       §7Commandes :
+      §f/transport create <vehicle> <template> §7- Crée un véhicule
+      §f/transport delete <vehicle> §7- Supprime un véhicule
       §f/transport help §7- Affiche l'aide
-      §f/transport reload §7- Recharge la configuration
-      §f/transport list (filtre) §7- Liste les véhicules
       §f/transport info [vehicle|part|player] (filtre) §7- Affiche les informations sur le véhicule
+      §f/transport list (filtre) §7- Liste les véhicules
+      §f/transport movement <vehicle> <destination> §7- Déplace un véhicule
+      §f/transport reload §7- Recharge la configuration
+      §f/transport respawn <vehicle> §7- Faire réapparaître un véhicule et ses pièces
+      §f/transport sit [enter|exit|lock|unlock] <vehicle> §7- S'asseoir dans un véhicule et le vérrouiller
+      §f/transport tphere <vehicle> §7- Téléporte un véhicule à vous ou à une position
+      §f/transport tpto <vehicle> §7- Se téléporter à un véhicule
 
   date:
     format: "yyyy-MM-dd HH:mm:ss"
