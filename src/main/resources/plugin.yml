@@ -6,3 +6,5 @@ author: Jarven
 depend: 
 - CommandAPI
 - ProtocolLib
+softdepend:
+- Multiverse-Core
