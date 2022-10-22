@@ -40,10 +40,9 @@ public class VehicleMover {
 			Math.signum(distanceToDestination.getX()),
 			Math.signum(distanceToDestination.getY()),
 			Math.signum(distanceToDestination.getZ()),
-			Math.signum((float) Math.sin(Math.toRadians(distanceToDestination.getYaw()))),
-			Math.signum((float) Math.sin(Math.toRadians(distanceToDestination.getPitch()))),
-			Math.signum((float) Math.sin(Math.toRadians(distanceToDestination.getRoll()))));
-		distanceToDestination.abs();
+			Math.signum(distanceToDestination.getYaw()),
+			Math.signum(distanceToDestination.getPitch()),
+			Math.signum(distanceToDestination.getRoll()));
 
 		// The acceleration gain in the direction of the destination
 		final MovementsConstraints maxAcceleration = vehicle.getTemplate().getMaxAcceleration();
@@ -64,7 +63,7 @@ public class VehicleMover {
 
 		// Speed at different points of the movement
 		MovementsConstraints maxSpeedConstraints = vehicle.getTemplate().getMaxSpeed();
-		MovementsVector currentSpeed = vehicle.getAllVelocity();
+		MovementsVector currentSpeed = new MovementsVector(vehicle.getAllVelocity()).rotateAsRelative(currentLocation);
 		MovementsVector maxSpeed = new MovementsVector(
 			maxSpeedConstraints.getOnX(directionToDestination.getX()),
 			maxSpeedConstraints.getOnY(directionToDestination.getY()),
@@ -92,9 +91,9 @@ public class VehicleMover {
 
 	private double calculateAcceleration(double currentSpeed, double maxSpeed, double maxAcceleration, double maxDeceleration, double distanceToDestination) {
 		double speedAtEnd = maxSpeed * velocityAtEnd;
-		double ticksToDestinationWithCurrentSpeed = Math.abs(distanceToDestination / currentSpeed);
-		double ticksToReachMaxSpeed = Math.abs((maxSpeed - Math.abs(currentSpeed)) / maxAcceleration);
-		double ticksToSlowDownAtEnd = Math.abs((maxSpeed - speedAtEnd) / maxDeceleration); // Overestimate the time (should be currentSpeed - speedAtEnd)
+		double ticksToDestinationWithCurrentSpeed = distanceToDestination / currentSpeed;
+		double ticksToReachMaxSpeed = (maxSpeed - Math.abs(currentSpeed)) / Math.abs(maxAcceleration);
+		double ticksToSlowDownAtEnd = (Math.abs(currentSpeed) - speedAtEnd) / Math.abs(maxDeceleration) * 3;
 
 		double acceleration;
 		if (Math.signum(currentSpeed) != Math.signum(maxAcceleration)) {
@@ -107,8 +106,9 @@ public class VehicleMover {
 			return 0;
 		}
 
-		if (distanceToDestination < 1) { // Slow down
-			acceleration *= distanceToDestination;
+		double distance = Math.abs(distanceToDestination);
+		if (distance < 1) { // Slow down
+			acceleration *= distance;
 		}
 
 		return acceleration;
@@ -116,24 +116,24 @@ public class VehicleMover {
 
 	private float calculateAcceleration(float currentSpeed, float maxSpeed, float maxAcceleration, float maxDeceleration, float distanceToDestination) {
 		float speedAtEnd = maxSpeed * velocityAtEnd;
-		double ticksToDestinationWithCurrentSpeed = Math.abs(distanceToDestination / currentSpeed);
-		double ticksToReachMaxSpeed = Math.abs((maxSpeed - Math.abs(currentSpeed)) / maxAcceleration);
-		double ticksToSlowDownAtEnd = Math.abs((maxSpeed - speedAtEnd) / maxDeceleration);
+		double ticksToDestinationWithCurrentSpeed = distanceToDestination / currentSpeed;
+		double ticksToReachMaxSpeed = (maxSpeed - Math.abs(currentSpeed)) / Math.abs(maxAcceleration);
+		double ticksToSlowDownAtEnd = (Math.abs(currentSpeed) - speedAtEnd) / Math.abs(maxDeceleration) * 2;
 
 		float acceleration;
-		if (ticksToDestinationWithCurrentSpeed <= ticksToSlowDownAtEnd) {
+		if (Math.signum(currentSpeed) != Math.signum(maxAcceleration)) {
+			acceleration = maxAcceleration;
+		} else if (ticksToDestinationWithCurrentSpeed <= ticksToSlowDownAtEnd) {
 			acceleration = maxDeceleration;
-		} else if (ticksToDestinationWithCurrentSpeed > ticksToReachMaxSpeed || Math.signum(currentSpeed) != Math.signum(maxAcceleration)) {
+		} else if (ticksToReachMaxSpeed < ticksToDestinationWithCurrentSpeed) {
 			acceleration = maxAcceleration;
 		} else {
 			return 0;
 		}
 
-		// center distanceToDestination between -180 and 180 : | modulo(x-90,360)-180 | -90
-		float distance = Math.abs(distanceToDestination - 360 * (float) Math.floor((distanceToDestination - 90) / 360) - 270) - 90;
-
-		if (distance < 10) { // Slow down
-			acceleration *= distance * 0.1;
+		float distance = Math.abs(distanceToDestination);
+		if (distance < 5) { // Slow down
+			acceleration *= distance * 0.2f;
 		}
 
 		return acceleration;
@@ -141,13 +141,13 @@ public class VehicleMover {
 
 	private void move() {
 		MovementsVector acceleration = vehicle.getAllAcceleration();
-		MovementsVector velocity = vehicle.getAllVelocity();
+		MovementsVector absoluteVelocity = vehicle.getAllVelocity();
 		LocationRollable location = new LocationRollable(vehicle.getLocation());
-		velocity.add(acceleration);
-		velocity.applyMaximum(vehicle.getTemplate().getMaxSpeed());
-		MovementsVector velocityAbsolue = new MovementsVector(velocity);
-		velocityAbsolue.rotateAsAbsolute(location);
-		location.add(velocityAbsolue);
+		MovementsVector relativeVelocity = new MovementsVector(absoluteVelocity).rotateAsRelative(location);
+		relativeVelocity.add(acceleration);
+		relativeVelocity.applyMaximum(vehicle.getTemplate().getMaxSpeed());
+		absoluteVelocity.update(relativeVelocity.rotateAsAbsolute(location));
+		location.add(absoluteVelocity);
 		vehicle.teleport(location);
 	}
 
@@ -175,7 +175,11 @@ public class VehicleMover {
 
 	private boolean isArrived() {
 		LocationRollable currentLocation = vehicle.getLocation();
-		return currentLocation == null || currentLocation.almostEquals(destination, 0.1, 1f);
+		if (currentLocation == null) return false;
+		double velocity = vehicle.getVelocity();
+		float rotVelocity = vehicle.getAllVelocity().getRotationDistanceWithOrigin();
+		if (velocity > 0.01 || rotVelocity > 0.1f) return false;
+		return currentLocation.almostEquals(destination, 0.1, 1f);
 	}
 
 	private boolean canMove() {

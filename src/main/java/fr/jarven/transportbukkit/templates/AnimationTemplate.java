@@ -118,12 +118,20 @@ public class AnimationTemplate {
 	public double apply(VehiclePart part) {
 		double value;
 		switch (proportional) {
-			case MOVE_ACCELERATION:
-				value = part.getVehicle().getAcceleration() * step;
+			case MOVE_ACCELERATION: {
+				double acceleration = part.getVehicle().getAcceleration();
+				double direction = Math.signum(part.getVehicle().getAllAcceleration().getZ());
+				if (direction == 0) direction = 1;
+				value = acceleration * direction * step;
 				break;
-			case MOVE_VELOCITY:
-				value = part.getVehicle().getVelocity() * step;
+			}
+			case MOVE_VELOCITY: {
+				double velocity = part.getVehicle().getVelocity();
+				double direction = Math.signum(part.getVehicle().getAllVelocity().getX());
+				if (direction == 0) direction = 1;
+				value = velocity * direction * step;
 				break;
+			}
 			case ROTATION_ACCELERATION:
 				value = part.getVehicle().getAllAcceleration().getRotationDistanceWithOrigin() * step;
 				break;

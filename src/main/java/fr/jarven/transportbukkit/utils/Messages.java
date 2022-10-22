@@ -27,7 +27,7 @@ public class Messages {
 	private static String defaultLanguage = "en_US";
 	private static YamlConfiguration defaultTranslations = null;
 	private static Map<String, YamlConfiguration> languages = new HashMap<>();
-	private static final String LANGUAGE_VERSION = "2022-10-20";
+	private static final String LANGUAGE_VERSION = "2022-10-22";
 	private static boolean alwaysSaveLang = false;
 
 	public enum Resources {

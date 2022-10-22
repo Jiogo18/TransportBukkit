@@ -191,7 +191,7 @@ public class Vehicle {
 	protected void updatePassengers() {
 		for (Seat seat : seats) {
 			if (seat.hasPassenger()) {
-				TransportPlugin.getVehicleManager().onSeatEnter(seat.getPassenger().orElseThrow(), seat);
+				TransportPlugin.getVehicleManager().onSeatEnter(seat.getPassenger().orElse(null), seat);
 			}
 		}
 	}

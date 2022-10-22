@@ -26,6 +26,7 @@ public class PartTemplate extends BasePartTemplate {
 	}
 
 	public enum RotationType {
+		FAKE_TELEPORT,
 		TELEPORT,
 		ROTATE_HEAD,
 		ROTATE_HEAD_DELAYED,

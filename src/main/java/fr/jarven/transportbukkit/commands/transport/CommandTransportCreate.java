@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.commands.CommandTools;
@@ -27,7 +26,7 @@ public class CommandTransportCreate extends CommandTools {
 								return builder.suggest(templateName + index).buildFuture();
 							})
 							.executesNative((sender, args) -> { return createVehicle(sender, (VehicleTemplate) args[0], (String) args[1], sender.getLocation()); })
-							.then(new LocationArgument("vehicle_location").executes((sender, args) -> { return createVehicle(sender, (VehicleTemplate) args[0], (String) args[1], (Location) args[2]); }))
+							.then(locationRollableArgument(2, (sender, args, loc) -> createVehicle(sender, (VehicleTemplate) args[0], (String) args[1], loc)))
 							.executesConsole((sender, args) -> { Resources.NEED_LOCATION.send(sender); return 1; })));
 	}
 

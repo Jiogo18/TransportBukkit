@@ -2,10 +2,12 @@ package fr.jarven.transportbukkit.commands;
 
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandTree;
+import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportCreate;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportDelete;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportHelp;
@@ -25,9 +27,17 @@ public class CommandManager {
 		Predicate<CommandSender> requireAdmin = s -> s != null && s.hasPermission("transport.admin");
 		Predicate<CommandSender> requireWatcher = s -> s != null && s.hasPermission("transport.watcher");
 
-		new CommandTree("transport")
-			.withAliases("vehicle", "vehicule")
-			.withHelp("Plugin TransportBukkit by Jarven", CommandTransportHelp.getHelpMessage().build(null) + "\n§6Aliases : vehicle, vehicule")
+		CommandTree transport = new CommandTree("transport");
+
+		List<String> commandAliases = TransportPlugin.getInstance().getConfig().getStringList("command_aliases");
+		String aliases = "";
+		if (commandAliases != null && !commandAliases.isEmpty()) {
+			transport = transport.withAliases(commandAliases.toArray(String[] ::new));
+			aliases = "\n§6Aliases: §e" + String.join(", ", commandAliases);
+		}
+
+		transport
+			.withHelp("Plugin TransportBukkit by Jarven", CommandTransportHelp.getHelpMessage().build(null) + aliases)
 			.withRequirement(s -> s != null && s.hasPermission("transport"))
 			.then(new CommandTransportHelp().getArgumentTree())
 			.then(new CommandTransportInfo().getArgumentTree().withRequirement(requireWatcher))

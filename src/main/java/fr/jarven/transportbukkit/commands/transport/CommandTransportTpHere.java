@@ -1,10 +1,8 @@
 package fr.jarven.transportbukkit.commands.transport;
 
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import dev.jorel.commandapi.arguments.LocationArgument;
 import fr.jarven.transportbukkit.commands.CommandTools;
 import fr.jarven.transportbukkit.utils.LocationRollable;
 import fr.jarven.transportbukkit.utils.Messages.Resources;
@@ -15,7 +13,7 @@ public class CommandTransportTpHere extends CommandTools {
 		return (LiteralArgument) literal("tphere")
 			.then(vehicleArgument("vehicle_name")
 					.executesNative((sender, args) -> { return tpVehicle(sender, (Vehicle) args[0], new LocationRollable(sender.getLocation())); })
-					.then(new LocationArgument("vehicle_location").executes((sender, args) -> { return tpVehicle(sender, (Vehicle) args[0], new LocationRollable((Location) args[1])); }))
+					.then(locationRollableArgument(1, (sender, args, loc) -> tpVehicle(sender, (Vehicle) args[0], loc)))
 					.executesConsole((sender, args) -> { Resources.NEED_LOCATION.send(sender); return 1; }));
 	}
 

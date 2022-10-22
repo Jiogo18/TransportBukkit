@@ -92,6 +92,10 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 
 	public void updateFakeLocation() {
 		if (isEntityValid()) {
+			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT) {
+				updateRealLocation();
+				return;
+			}
 			LocationRollable loc = getLocation();
 			float yaw = loc.getYaw();
 			float pitch = loc.getPitch();
@@ -106,7 +110,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 				.write(1, loc.getY())
 				.write(2, loc.getZ());
 
-			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT) {
+			if (template.getRotationType() == PartTemplate.RotationType.FAKE_TELEPORT) {
 				// Yaw sent by teleport packet
 				// Pitch and roll sent by head rotation
 				fakeTp.getBytes()
@@ -162,7 +166,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 			float pitch = loc.getPitch();
 			float roll = loc.getRoll();
 
-			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT) {
+			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT || template.getRotationType() == PartTemplate.RotationType.FAKE_TELEPORT) {
 				// Yaw sent by teleport packet
 				// Pitch and roll sent by head rotation
 				loc.setPitch(0);

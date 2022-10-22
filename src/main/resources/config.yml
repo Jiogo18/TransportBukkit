@@ -11,3 +11,6 @@ lazySaveDelay: 600
 # Save the templates of the plugin on reload
 save_default_templates: false
 always_save_lang: false
+
+command_aliases:
+  - vehicle

@@ -1,8 +1,8 @@
-# Modifié par Jarven le 2022-10-20.
+# Modifié par Jarven le 2022-10-22.
 # Vous pouvez désactiver l'actualisation automatique si vous modifiez ce fichier manuellement.
 version.autoupdate: true
 version.warnings: true
-version.revision: "2022-10-20"
+version.revision: "2022-10-22"
 
 transport:
   help:
@@ -11,7 +11,7 @@ transport:
       §7Version : §f%version%
       §7Auteur : §f%author%
       §7Commandes :
-      §f/transport create <vehicle> <template> §7- Crée un véhicule
+      §f/transport create <template> <vehicle> §7- Crée un véhicule
       §f/transport delete <vehicle> §7- Supprime un véhicule
       §f/transport help §7- Affiche l'aide
       §f/transport info [vehicle|part|player] (filtre) §7- Affiche les informations sur le véhicule

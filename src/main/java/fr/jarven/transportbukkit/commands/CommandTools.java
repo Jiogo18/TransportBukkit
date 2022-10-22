@@ -3,18 +3,26 @@ package fr.jarven.transportbukkit.commands;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import dev.jorel.commandapi.ArgumentTree;
+import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.RotationArgument;
+import dev.jorel.commandapi.wrappers.Rotation;
 import fr.jarven.transportbukkit.commands.arguments.PartArgument;
 import fr.jarven.transportbukkit.commands.arguments.PartTemplateArgument;
 import fr.jarven.transportbukkit.commands.arguments.VehicleArgument;
 import fr.jarven.transportbukkit.commands.arguments.VehicleTemplateArgument;
+import fr.jarven.transportbukkit.utils.LocationRollable;
 import fr.jarven.transportbukkit.utils.Messages.Resources;
 import fr.jarven.transportbukkit.utils.MovementsConstraints;
 import fr.jarven.transportbukkit.utils.MovementsVector;
+import fr.jarven.transportbukkit.utils.TriFunction;
 
 public class CommandTools {
 	protected CommandTools() {}
@@ -37,6 +45,29 @@ public class CommandTools {
 
 	public static PartArgument partArgument(String name) {
 		return new PartArgument(name);
+	}
+
+	public static ArgumentTree locationRollableArgument(int argIndex, TriFunction<CommandSender, Object[], LocationRollable, Integer> callback) {
+		return new LocationArgument("destination")
+			.executes((sender, args) -> {
+				LocationRollable loc = new LocationRollable((Location) args[argIndex]);
+				if (sender instanceof LivingEntity) {
+					loc.setYaw(((LivingEntity) sender).getLocation().getYaw());
+					loc.setPitch(((LivingEntity) sender).getLocation().getPitch());
+				}
+				return callback.apply(sender, args, loc);
+			})
+			.then(new RotationArgument("rotation")
+					.executes((sender, args) -> {
+						LocationRollable loc = new LocationRollable((Location) args[argIndex], (Rotation) args[argIndex + 1]);
+						return callback.apply(sender, args, loc);
+					})
+					.then(new FloatArgument("roll")
+							.executes((sender, args) -> {
+								LocationRollable loc = new LocationRollable((Location) args[argIndex], (Rotation) args[argIndex + 1]);
+								loc.setRoll((float) args[3]);
+								return callback.apply(sender, args, loc);
+							})));
 	}
 
 	public static double round(double value, int decimals) {

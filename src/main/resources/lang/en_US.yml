@@ -1,8 +1,8 @@
-# Edited by Jarven on 2022-10-20.
+# Edited by Jarven on 2022-10-22.
 # You can disable the auto update if you edit this file.
 version.autoupdate: true
 version.warnings: true
-version.revision: "2022-10-20"
+version.revision: "2022-10-22"
 
 transport:
   help:
@@ -11,7 +11,7 @@ transport:
       §7Version: §f%version%
       §7Author: §f%author%
       §7Commands:
-      §f/transport create <vehicle> <template> §7- Create a vehicle
+      §f/transport create <template> <vehicle> §7- Create a vehicle
       §f/transport delete <vehicle> §7- Delete a vehicle
       §f/transport help §7- Display help
       §f/transport info [vehicle|part|player] (filter) §7- Display information about the vehicle
