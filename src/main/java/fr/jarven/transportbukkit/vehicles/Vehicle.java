@@ -100,6 +100,7 @@ public class Vehicle {
 			} else {
 				seat = new Seat(this, seatTemplate);
 				seats.add(seat);
+				seat.spawn();
 			}
 			if (config != null) {
 				ConfigurationSection seatConfig = config.getConfigurationSection("seats." + seatTemplate.getSeatIndex());
@@ -107,7 +108,7 @@ public class Vehicle {
 					seat.loadConfig(seatConfig);
 				}
 			}
-			seat.spawn();
+			seat.update();
 		}
 	}
 

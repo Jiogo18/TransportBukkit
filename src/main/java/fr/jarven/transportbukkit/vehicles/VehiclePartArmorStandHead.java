@@ -10,79 +10,41 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
-
-import java.util.UUID;
+import org.bukkit.entity.Entity;
 
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.PartTemplate;
 import fr.jarven.transportbukkit.utils.LocationRollable;
 
-public class VehiclePartArmorStandHead extends VehiclePart {
+public class VehiclePartArmorStandHead extends VehiclePartEntity {
 	private static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 	private static final int NMS_NUMBER_VERSION = Integer.parseInt(NMS_VERSION.split("_")[1]);
 	private static final int NMS_ARMOR_STAND_ROTATE_PACKET_ID = NMS_NUMBER_VERSION >= 17 ? 16 : 15;
 	private ArmorStand entity;
-	private UUID entityUuid;
-	private long lastEntityGetTimestamp = 0;
 
 	protected VehiclePartArmorStandHead(Vehicle vehicle, PartTemplate properties) {
 		super(vehicle, properties);
 	}
 
-	void equipEntity() {
-		if (entity == null || !entity.isValid()) return;
-		template.applyInventory(entity.getEquipment());
-	}
-
-	void spawn() {
-		if (entity == null && entityUuid == null) {
-			entity = template.spawnArmorStand(getLocation());
-			entity.setCustomName(getVehicle().getName() + " " + template.getName());
-			entity.addScoreboardTag("TransportBukkit_Part");
-			entityUuid = entity.getUniqueId();
-
-			equipEntity();
-			getVehicle().makeDirty();
-		}
+	@Override
+	Entity getEntity() {
+		return entity;
 	}
 
 	@Override
-	protected void respawn() {
-		if (entityUuid != null) {
-			// Load the chunk if needed
-			getVehicle().getLocation().getChunk();
+	Entity getEntityForce() {
+		if (entity == null || !entity.isValid()) {
 			entity = (ArmorStand) Bukkit.getEntity(entityUuid);
-			if (entity == null) {
-				entityUuid = null;
-				spawn();
-			} else {
-				equipEntity();
-				updateRealLocation();
-			}
-		} else {
-			spawn();
 		}
+		return entity;
 	}
 
-	private boolean isEntityValid() {
-		if (entity != null && entity.isValid()) {
-			return true;
+	@Override
+	Entity spawnEntity() {
+		if (entityUuid == null && !isEntityValid()) {
+			entity = template.spawnArmorStand(getLocation());
 		}
-		if (entityUuid == null) {
-			spawn();
-			return true;
-		}
-		long now = System.currentTimeMillis();
-		long timeSinceLastGet = now - lastEntityGetTimestamp;
-		if (timeSinceLastGet < 5000) {
-			return false;
-		}
-		entity = (ArmorStand) Bukkit.getEntity(entityUuid);
-		lastEntityGetTimestamp = now;
-		if (entity == null || !entity.isValid()) {
-			entity = null;
-		}
-		return entity != null;
+		return entity;
 	}
 
 	@Override
@@ -90,6 +52,7 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		return template.getLocationIfEntity(getVehicle().getLocationWithOffset(), getOffsetAnimation(), 1.4);
 	}
 
+	@Override
 	public void updateFakeLocation() {
 		if (isEntityValid()) {
 			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT) {
@@ -189,47 +152,25 @@ public class VehiclePartArmorStandHead extends VehiclePart {
 		}
 	}
 
-	protected void update() {
-		if (entityUuid != null) {
-			entity = (ArmorStand) Bukkit.getEntity(entityUuid);
-			if (entity != null) {
-				equipEntity();
-				updateRealLocation();
-			}
-		}
-		if (template.isAnimated()) {
-			TransportPlugin.getAnimationManager().updateAnimation(this);
-		}
-	}
-
-	public UUID getEntityUUID() {
-		return entityUuid;
-	}
-
 	protected void removeInternal() {
 		if (entity != null) {
 			entity.remove();
 			entity = null;
 		}
-	}
-
-	@Override
-	protected void saveConfig(ConfigurationSection section) {
-		super.saveConfig(section);
-		section.set("entityUuid", entityUuid != null ? entityUuid.toString() : "");
+		entityUuid = null;
 	}
 
 	@Override
 	protected void loadConfig(ConfigurationSection section) {
 		super.loadConfig(section);
 		try {
-			if (section.isString("entityUuid") && !section.getString("entityUuid").isEmpty()) {
-				entityUuid = UUID.fromString(section.getString("entityUuid"));
+			if (entityUuid != null) {
 				entity = (ArmorStand) Bukkit.getEntity(entityUuid);
+			} else {
+				entity = null;
 			}
 		} catch (IllegalArgumentException e) {
-			TransportPlugin.LOGGER.warning("Invalid entity UUID: " + section.getString("entityUuid", ""));
-			entityUuid = null;
+			TransportPlugin.LOGGER.warning("Invalid entity: " + entityUuid);
 			entity = null;
 		}
 	}

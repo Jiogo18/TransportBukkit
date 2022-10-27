@@ -1,0 +1,94 @@
+# This is an example file to create vehicles template.
+# Templates are readonly by the plugin, which means you have to edit them manualy
+
+name: "boat_slime"
+
+# Parts of the vehicle
+parts:
+ - boat_slime_part
+
+# Position of the pivot point relative to the position of the vehicle
+offset:
+  x: 0
+  y: 0
+  z: 0
+  yaw: 0
+  pitch: 0
+  roll: 0
+
+# Prevent players to enter and exit the vehicle while it's moving
+lock_when_moving: true
+
+# Seats for entities
+seats:
+  - type: PASSENGER
+    offset:
+      x: 1.4
+      y: -0.55
+      z: 1
+      yaw: 90
+
+  - type: PASSENGER
+    offset:
+      x: 1.4
+      y: -0.55
+      z: -0.5
+      yaw: 90
+
+  - type: PASSENGER
+    offset:
+      x: 1.4
+      y: -0.55
+      z: -2
+      yaw: 90
+
+  - type: PASSENGER
+    offset:
+      x: -1.4
+      y: -0.55
+      z: 1
+      yaw: -90
+
+  - type: PASSENGER
+    offset:
+      x: -1.4
+      y: -0.55
+      z: -0.5
+      yaw: -90
+
+  - type: PASSENGER
+    offset:
+      x: -1.4
+      y: -0.55
+      z: -2
+      yaw: -90
+
+max_speed:
+  ==: fr.jarven.transportbukkit.utils.MovementsConstraints
+  forward: 0.5
+  backward: 0.2
+  left: 0.2
+  right: 0.2
+  up: 0.5
+  down: 0.5
+  yawLeft: 2
+  yawRight: 2
+  pitchUp: 2
+  pitchDown: 2
+  rollLeft: 2
+  rollRight: 2
+
+max_acceleration:
+  ==: fr.jarven.transportbukkit.utils.MovementsConstraints
+  forward: 0.02
+  backward: 0.01
+  left: 0.005
+  right: 0.005
+  up: 0.01
+  down: 0.01
+  yawLeft: 0.1
+  yawRight: 0.1
+  pitchUp: 0.1
+  pitchDown: 0.1
+  rollLeft: 0.1
+  rollRight: 0.1

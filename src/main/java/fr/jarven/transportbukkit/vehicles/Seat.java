@@ -100,15 +100,12 @@ public class Seat {
 	}
 
 	public boolean ejectPassenger() {
+		if (!hasSeat()) return false;
 		List<Entity> passengers = this.seatEntity.getPassengers();
-		if (hasSeat() && this.seatEntity.eject()) {
-			for (Entity passenger : passengers) {
-				TransportPlugin.getVehicleManager().onSeatExit(passenger);
-			}
-			return true;
-		} else {
-			return false;
+		for (Entity passenger : passengers) {
+			TransportPlugin.getVehicleManager().onSeatExit(passenger);
 		}
+		return this.seatEntity.eject();
 	}
 
 	public Optional<Entity> getPassenger() {

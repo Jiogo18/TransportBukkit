@@ -7,9 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -154,5 +156,21 @@ public class PlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		TransportPlugin.getVehicleManager().onPlayerJoin(player);
+	}
+
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player player = event.getPlayer();
+		if (TransportPlugin.getVehicleManager().getPlayersPassengers().contains(player.getUniqueId())) {
+			cancelLeaveEventIfLocked(event, player, false);
+		}
+	}
+
+	@EventHandler
+	public void onEntityHurt(EntityDamageEvent event) {
+		Entity entity = event.getEntity();
+		if (isVehiclePartEntity(entity)) {
+			event.setCancelled(true);
+		}
 	}
 }

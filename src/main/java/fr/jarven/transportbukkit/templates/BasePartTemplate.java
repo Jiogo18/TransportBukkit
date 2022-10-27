@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Method;
 import java.util.function.Supplier;
@@ -61,6 +62,12 @@ public abstract class BasePartTemplate {
 		entity.setInvulnerable(true);
 		entity.setGravity(false);
 		entity.addScoreboardTag("TransportBukkit_Entity");
+		if (entity instanceof LivingEntity) {
+			((LivingEntity) entity).setAI(false);
+			((LivingEntity) entity).setSilent(true);
+			((LivingEntity) entity).setPersistent(true);
+			((LivingEntity) entity).setRemoveWhenFarAway(false);
+		}
 		return entity;
 	}
 

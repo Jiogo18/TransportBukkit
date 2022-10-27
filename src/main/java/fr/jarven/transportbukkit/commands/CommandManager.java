@@ -32,7 +32,7 @@ public class CommandManager {
 		List<String> commandAliases = TransportPlugin.getInstance().getConfig().getStringList("command_aliases");
 		String aliases = "";
 		if (commandAliases != null && !commandAliases.isEmpty()) {
-			transport = transport.withAliases(commandAliases.toArray(String[] ::new));
+			transport = transport.withAliases(commandAliases.toArray(new String[0]));
 			aliases = "\n§6Aliases: §e" + String.join(", ", commandAliases);
 		}
 

@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,14 @@ public class VehicleManager {
 	}
 
 	public boolean removeVehicle(Vehicle vehicle) {
-		return vehicles.remove(vehicle);
+		try {
+			if (vehicle.getFile().exists())
+				Files.delete(vehicle.getFile().toPath());
+			return removeVehicleDontDeleteFile(vehicle);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public boolean removeVehicleDontDeleteFile(Vehicle vehicle) {
@@ -79,7 +87,6 @@ public class VehicleManager {
 		onDisable();
 		SaveTask.reload();
 
-		vehicles.forEach(Vehicle::applyTemplate);
 		if (!vehicleFolder.exists()) {
 			makeVehicleFolderIfNeeded();
 		} else {
@@ -168,6 +175,10 @@ public class VehicleManager {
 		if (entity instanceof Player) {
 			seatsByPlayer.remove(entity.getUniqueId());
 		}
+	}
+
+	public Set<UUID> getPlayersPassengers() {
+		return seatsByPlayer.keySet();
 	}
 
 	public void onPlayerJoin(Player player) {

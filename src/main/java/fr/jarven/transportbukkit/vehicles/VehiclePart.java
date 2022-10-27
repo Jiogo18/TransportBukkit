@@ -49,11 +49,12 @@ public abstract class VehiclePart {
 		switch (partTemplate.getType()) {
 			case ARMOR_STAND_HEAD:
 				return new VehiclePartArmorStandHead(vehicle, partTemplate);
+			case CUSTOM_ENTITY:
+				return new VehiclePartCustomEntity(vehicle, partTemplate);
 			case UNKNOWN:
 				throw new IllegalArgumentException("Unknown part type: " + partTemplate.getType() + " for part " + partTemplate.getName());
-			default:
-				throw new IllegalArgumentException("Unsupported part type: " + partTemplate.getType() + " for part " + partTemplate.getName());
 		}
+		throw new IllegalArgumentException("Unknown part type: " + partTemplate.getType() + " for part " + partTemplate.getName());
 	}
 
 	protected void saveConfig(ConfigurationSection section) {

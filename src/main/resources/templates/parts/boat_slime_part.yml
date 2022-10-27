@@ -1,0 +1,40 @@
+# This is an example file to create vehicle parts template
+# This template is used in the "boat" vehicle template
+# Templates are readonly by the plugin, which means you have to edit them manualy
+
+name: boat_slime_part
+
+# type of the part (Require restart)
+# ARMOR_STAND_HEAD: an armor stand with an item on his head
+# CUSTOM_ENTITY: a custom entity (use the entityType option)
+type: CUSTOM_ENTITY
+entityType: MAGMA_CUBE
+
+# Rotate the armor stand by its head or with the tp
+# TELEPORT is less accurate, but smoother (default)
+# TELEPORT_FAKE is the same as TELEPORT, but with some fake rotations (doesn't work if the entity travels a lot)
+# ROTATE_HEAD is more accurate, but less smooth at high speed
+# ROTATE_HEAD_DELAYED is the same as ROTATE_HEAD, but with a delay to make it smoother with the tp animation
+rotationType: TELEPORT
+
+offset:
+  x: 0
+  y: 0
+  z: 0
+  yaw: 0
+  pitch: 0
+  roll: 0
+
+# Additional properties of the entity
+# NO_GRAVITY // default true (boolean)
+# INVISIBLE // default true (boolean)
+# NO_AI // default true (boolean)
+# SIZE (int)
+# HEALTH (double) between 0 and 1024
+# NECK_HEIGH // default 0 (double)
+# NAME // default is the combined name of the vehicle and the part (string)
+# COLLISION // default true (boolean)
+entityProperties:
+  SIZE: 7
+  HEALTH: 1024
+  NAME: ""
