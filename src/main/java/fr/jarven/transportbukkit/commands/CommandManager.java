@@ -21,6 +21,7 @@ import fr.jarven.transportbukkit.commands.transport.CommandTransportTpHere;
 import fr.jarven.transportbukkit.commands.transport.CommandTransportTpTo;
 
 public class CommandManager {
+	private static String[] aliasesList = null;
 	private CommandManager() {}
 
 	public static void onEnable() {
@@ -32,7 +33,8 @@ public class CommandManager {
 		List<String> commandAliases = TransportPlugin.getInstance().getConfig().getStringList("command_aliases");
 		String aliases = "";
 		if (commandAliases != null && !commandAliases.isEmpty()) {
-			transport = transport.withAliases(commandAliases.toArray(new String[0]));
+			CommandManager.aliasesList = commandAliases.toArray(new String[0]);
+			transport = transport.withAliases(aliasesList);
 			aliases = "\n§6Aliases: §e" + String.join(", ", commandAliases);
 		}
 
@@ -55,5 +57,10 @@ public class CommandManager {
 
 	public static void onDisable() {
 		CommandAPI.unregister("transport");
+		if (CommandManager.aliasesList != null) {
+			for (String alias : CommandManager.aliasesList) {
+				CommandAPI.unregister(alias);
+			}
+		}
 	}
 }
