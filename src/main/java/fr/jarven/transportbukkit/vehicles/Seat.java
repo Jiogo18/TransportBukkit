@@ -1,8 +1,13 @@
 package fr.jarven.transportbukkit.vehicles;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,48 +22,57 @@ public class Seat {
 	private SeatProperties template;
 	private Entity seatEntity;
 	private UUID seatEntityUuid;
+	private long lastEntityGetTimestamp = 0;
 
 	protected Seat(Vehicle vehicle, SeatProperties template) {
 		this.vehicle = vehicle;
 		this.template = template;
 	}
 
-	protected void update() {
-		if (seatEntity != null && seatEntity.isValid()) {
-			updateRealLocation();
-		}
-	}
-
 	protected void spawn() {
-		if (seatEntity == null) {
+		if (seatEntity == null || !seatEntity.isValid()) {
 			if (seatEntityUuid != null) {
-				seatEntity = Bukkit.getEntity(seatEntityUuid);
-			}
-			if (seatEntity == null) {
+				retrieveSeatEntity();
+			} else {
 				seatEntity = template.spawnEntity(getLocation());
 				seatEntity.setCustomName(vehicle.getName() + " Seat " + template.getSeatIndex());
 				seatEntityUuid = seatEntity.getUniqueId();
 				vehicle.makeDirty();
-			} else {
-				updateRealLocation();
 			}
-		} else {
-			updateRealLocation();
 		}
+		updateRealLocation();
 	}
 
 	protected void respawn() {
-		if (seatEntity == null || !seatEntity.isValid()) {
-			spawn();
-		} else {
-			updateRealLocation();
+		if (seatEntity == null || !seatEntity.isValid() && seatEntityUuid != null) {
+			retrieveSeatEntity();
+			if (seatEntity == null) {
+				seatEntityUuid = null;
+			}
 		}
+		spawn();
 	}
 
 	protected void updateRealLocation() {
-		if (seatEntity != null && seatEntity.isValid()) {
+		if (hasSeatLazy()) {
 			template.teleport(seatEntity, getLocation());
+			updatePassengerRotation();
 		}
+	}
+
+	private void updatePassengerRotation() {
+		LocationRollable location = getLocation();
+		getPassenger().ifPresent(entity -> {
+			if (!(entity instanceof Player)) {
+				entity.setRotation(location.getYaw(), entity.getLocation().getPitch());
+			} else if (entity.hasMetadata("NPC")) {
+				ProtocolManager protocolManager = TransportPlugin.getProtocolManager();
+				PacketContainer fakeRotation = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
+				fakeRotation.getIntegers().write(0, entity.getEntityId());
+				fakeRotation.getBytes().write(0, (byte) (location.getYaw() * 256 / 360));
+				protocolManager.broadcastServerPacket(fakeRotation);
+			}
+		});
 	}
 
 	public LocationRollable getLocation() {
@@ -77,16 +91,50 @@ public class Seat {
 		return seatEntityUuid;
 	}
 
+	private void retrieveSeatEntity() {
+		if (seatEntityUuid != null) {
+			seatEntity = Bukkit.getEntity(seatEntityUuid);
+			if (seatEntity != null && seatEntity.isValid()) {
+				updateRealLocation();
+			}
+		}
+	}
+
 	public boolean hasSeat() {
-		return seatEntity != null && seatEntity.isValid();
+		if (seatEntity != null && seatEntity.isValid()) {
+			return true;
+		} else if (seatEntityUuid != null) {
+			retrieveSeatEntity();
+			return seatEntity != null && seatEntity.isValid();
+		} else {
+			return false;
+		}
+	}
+
+	private boolean hasSeatLazy() {
+		if (seatEntity != null && seatEntity.isValid()) {
+			return true;
+		} else if (seatEntityUuid != null) {
+			long now = System.currentTimeMillis();
+			long timeSinceLastGet = now - lastEntityGetTimestamp;
+			if (timeSinceLastGet < 5000) {
+				return false;
+			}
+			retrieveSeatEntity();
+			return seatEntity != null && seatEntity.isValid();
+		} else {
+			return false;
+		}
 	}
 
 	public boolean addPassenger(Entity passenger) {
 		if (!hasSeat()) return false;
+		if (passenger.getScoreboardTags().contains("TransportBukkit_Entity")) return false;
 		boolean alreadyIn = seatEntity.getPassengers().stream().anyMatch(p -> p.getUniqueId().equals(passenger.getUniqueId()));
 		if (hasPassenger() && !alreadyIn) return false;
 		if (!this.seatEntity.addPassenger(passenger)) return false;
 		TransportPlugin.getVehicleManager().onSeatEnter(passenger, this);
+		updatePassengerRotation();
 		return true;
 	}
 
@@ -118,7 +166,7 @@ public class Seat {
 
 	protected void removeInternal() {
 		ejectPassenger();
-		if (seatEntity != null && seatEntity.isValid()) {
+		if (hasSeat()) {
 			seatEntity.remove();
 		}
 		seatEntity = null;
@@ -141,9 +189,12 @@ public class Seat {
 			}
 		}
 		try {
-			if (section.isString("entityUuid") && !section.getString("entityUuid").isEmpty()) {
-				seatEntityUuid = UUID.fromString(section.getString("entityUuid"));
-				seatEntity = Bukkit.getEntity(seatEntityUuid);
+			if (section.isString("entityUuid")) {
+				String uuidString = section.getString("entityUuid");
+				if (!uuidString.isEmpty()) {
+					seatEntityUuid = UUID.fromString(uuidString);
+					retrieveSeatEntity();
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			seatEntityUuid = null;
