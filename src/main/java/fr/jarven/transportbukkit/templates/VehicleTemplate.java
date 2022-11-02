@@ -4,7 +4,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +59,7 @@ public class VehicleTemplate {
 		return lockWhenMoving;
 	}
 
+	@SuppressWarnings("java:S3776") // Cognitive Complexity
 	public static VehicleTemplate fromFile(File file) {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		String name = config.getString("name");
@@ -82,30 +82,29 @@ public class VehicleTemplate {
 		VehicleTemplate vehicleTemplate = new VehicleTemplate(name, offset, maxSpeed, maxAcceleration);
 
 		List<String> parts = config.getStringList("parts");
-		for (String partName : parts) {
-			Optional<PartTemplate> partTemplate = TransportPlugin.getTemplateManager().getPartTemplate(partName);
-			if (partTemplate.isPresent()) {
-				vehicleTemplate.parts.add(partTemplate.get());
-			} else {
-				TransportPlugin.getInstance().getLogger().warning("Part template " + partName + " not found for vehicle " + name);
+		if (parts != null) {
+			for (String partName : parts) {
+				Optional<PartTemplate> partTemplate = TransportPlugin.getTemplateManager().getPartTemplate(partName);
+				if (partTemplate.isPresent()) {
+					vehicleTemplate.parts.add(partTemplate.get());
+				} else {
+					TransportPlugin.getInstance().getLogger().warning("Part template " + partName + " not found for vehicle " + name);
+				}
 			}
 		}
 
 		List<?> seats = config.getList("seats");
-		for (Object object : seats) {
-			SeatProperties seatTemplate;
-			if (object instanceof SeatProperties) {
-				seatTemplate = (SeatProperties) object;
-			} else if (object instanceof LinkedHashMap) {
-				@SuppressWarnings("unchecked")
-				LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) object;
-				seatTemplate = SeatProperties.deserialize(map);
-			} else {
-				TransportPlugin.LOGGER.warning("Invalid seat for vehicle " + name);
-				continue;
+		if (seats != null) {
+			for (Object object : seats) {
+				try {
+					SeatProperties seatTemplate = SeatProperties.fromConfig(object);
+					seatTemplate.setSeatIndex(vehicleTemplate.seats.size());
+					vehicleTemplate.seats.add(seatTemplate);
+				} catch (Exception e) {
+					TransportPlugin.getInstance().getLogger().warning("Invalid Seat " + object + " for vehicle " + name);
+					TransportPlugin.LOGGER.warning("Invalid seat " + object + " for vehicle " + name);
+				}
 			}
-			seatTemplate.setSeatIndex(vehicleTemplate.seats.size());
-			vehicleTemplate.seats.add(seatTemplate);
 		}
 
 		vehicleTemplate.lockWhenMoving = config.getBoolean("lock_when_moving", false);

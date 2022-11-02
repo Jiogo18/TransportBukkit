@@ -5,6 +5,8 @@ import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
 
+import fr.jarven.transportbukkit.TransportPlugin;
+
 public class MovementsVector extends Vector {
 	private float yaw;
 	private float pitch;
@@ -141,8 +143,11 @@ public class MovementsVector extends Vector {
 			float relativePitch = (float) getDouble(map.get("pitch"));
 			float relativeRoll = (float) getDouble(map.get("roll"));
 			return new MovementsVector(x, y, z, relativeYaw, relativePitch, relativeRoll);
+		} else if (object == null) {
+			return new MovementsVector();
 		} else {
-			throw new IllegalArgumentException("MovementsVector can't be created from " + object.getClass().getName());
+			TransportPlugin.LOGGER.warning("MovementsVector can't be created from " + object.getClass().getName());
+			return new MovementsVector();
 		}
 	}
 

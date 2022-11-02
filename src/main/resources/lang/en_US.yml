@@ -1,8 +1,8 @@
-# Edited by Jarven on 2022-10-22.
+# Edited by Jarven on 2022-11-02.
 # You can disable the auto update if you edit this file.
 version.autoupdate: true
 version.warnings: true
-version.revision: "2022-10-22"
+version.revision: "2022-11-02"
 
 transport:
   help:
@@ -27,7 +27,7 @@ transport:
     format: "yyyy-MM-dd HH:mm:ss"
 
   vehicle:
-    unknown: "Vehicle %vehicle% unknown"
+    unknown: "§cVehicle %vehicle% §cunknown"
     list: |-
       §7Vehicles:
       %vehicles%
@@ -41,11 +41,11 @@ transport:
       §7Seats: §f%seats%
       §7Passengers: §f%passengers%
       §7Last saved: §f%last_saved%
-    already_exists: "Vehicle %vehicle% already exists"
+    already_exists: "§cVehicle %vehicle% §calready exists"
     created: "Vehicle %vehicle% created"
-    creation_failed: "Vehicle creation failed"
+    creation_failed: "§cVehicle creation failed"
     removed: "Vehicle %vehicle% removed"
-    removal_failed: "Vehicle removal failed"
+    removal_failed: "§cVehicle removal failed"
     teleported: "Vehicle %vehicle% teleported"
     respawned: "Vehicle %vehicle% respawned"
     movement:
@@ -55,7 +55,7 @@ transport:
       not_moving: "Vehicle %vehicle% is not moving"
 
   part:
-    unknown: "Vehicle part %part% unknown"
+    unknown: "§cVehicle part %part% §cunknown"
     info: |-
       §7Vehicle part: §f%part%
       §7Vehicle: §f%vehicle%
@@ -64,7 +64,7 @@ transport:
     
   template:
     vehicle:
-      unknown: "Vehicle template %template_vehicle% unknown"
+      unknown: "§cVehicle template %template_vehicle% §cunknown"
       list: |-
         §7Vehicle templates:
         %vehicle_templates%
@@ -75,7 +75,7 @@ transport:
         §7Seats: §f%seats%
         §7Parts: §f%parts%
     part:
-      unknown: "Vehicle part template %template_part% unknown"
+      unknown: "§cVehicle part template %template_part% §cunknown"
       list: |-
         §7Vehicle part templates:
         %part_templates%
@@ -86,7 +86,7 @@ transport:
         §7Rotation: §f%rotation%
 
   player:
-    unknown: "Player %player% unknown"
+    unknown: "§cPlayer %player% §cunknown"
     info: |-
       §7Player: §f%player%
       §7Vehicle: §f%vehicle%
@@ -98,7 +98,7 @@ transport:
     enter: "%player% entered the vehicle %vehicle%"
     full: "%vehicle% is full"
     exit: "%player% left the vehicle %vehicle%"
-    not_in_vehicle: "%player% is not in a vehicle"
+    not_in_vehicle: "%player% §cis not in a vehicle"
     locked: "%vehicle% is locked"
     already_locked: "%vehicle% is already locked"
     unlocked: "%vehicle% is unlocked"

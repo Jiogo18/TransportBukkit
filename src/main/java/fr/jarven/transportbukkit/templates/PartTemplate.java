@@ -1,8 +1,10 @@
 package fr.jarven.transportbukkit.templates;
 
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -142,16 +144,32 @@ public class PartTemplate extends BasePartTemplate {
 		return getLocationIfEntity(location, animationOffset, getDouble(entityProperties.getOrDefault(EntityPropertyType.NECK_HEIGH, 0)));
 	}
 
-	public Entity spawnEntity(LocationRollable location) {
+	public Entity spawnEntity(LocationRollable location, String vehicleName) {
+		Entity entity = null;
 		switch (type) {
 			case ARMOR_STAND_HEAD:
-				return spawnArmorStand(location);
+				entity = spawnArmorStand(location, vehicleName);
+				break;
 			case CUSTOM_ENTITY:
-				return spawnEntity(location, entityType);
+				entity = spawnEntity(location, entityType, vehicleName);
+				break;
 			case UNKNOWN:
 				return null;
 		}
+		if (entity != null) {
+			entity.addScoreboardTag("Part_" + name);
+			return entity;
+		}
 		throw new IllegalStateException("Unknown part type " + type);
+	}
+
+	@Override
+	public ArmorStand spawnArmorStand(Location location, String vehicleName) {
+		ArmorStand armorStand = super.spawnArmorStand(location, vehicleName);
+		if (armorStand != null) {
+			armorStand.addScoreboardTag("Part_" + name);
+		}
+		return armorStand;
 	}
 
 	public void applyInventory(EntityEquipment equipment) {

@@ -34,8 +34,7 @@ public class Seat {
 			if (seatEntityUuid != null) {
 				retrieveSeatEntity();
 			} else {
-				seatEntity = template.spawnEntity(getLocation());
-				seatEntity.setCustomName(vehicle.getName() + " Seat " + template.getSeatIndex());
+				seatEntity = template.spawnEntity(getLocation(), vehicle.getName());
 				seatEntityUuid = seatEntity.getUniqueId();
 				vehicle.makeDirty();
 			}

@@ -5,6 +5,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import fr.jarven.transportbukkit.utils.LocationRollable;
@@ -38,6 +39,18 @@ public class SeatProperties extends BasePartTemplate implements ConfigurationSer
 		return seatProperties;
 	}
 
+	public static SeatProperties fromConfig(Object object) {
+		if (object instanceof SeatProperties) {
+			return (SeatProperties) object;
+		} else if (object instanceof LinkedHashMap) {
+			@SuppressWarnings("unchecked")
+			LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) object;
+			return SeatProperties.deserialize(map);
+		} else {
+			throw new IllegalArgumentException("Invalid seat template");
+		}
+	}
+
 	public void update(SeatProperties template) {
 		this.seatIndex = template.seatIndex;
 		this.offset = template.offset;
@@ -52,10 +65,12 @@ public class SeatProperties extends BasePartTemplate implements ConfigurationSer
 		return seatIndex;
 	}
 
-	public Entity spawnEntity(LocationRollable location) {
-		ArmorStand entity = super.spawnArmorStand(location);
+	public Entity spawnEntity(LocationRollable location, String vehicleName) {
+		ArmorStand entity = super.spawnArmorStand(location, vehicleName);
 		entity.setSmall(true);
 		entity.addScoreboardTag("TransportBukkit_Seat");
+		entity.addScoreboardTag("Seat_" + seatIndex);
+		entity.setCustomName(vehicleName + " Seat " + seatIndex);
 		return entity;
 	}
 }

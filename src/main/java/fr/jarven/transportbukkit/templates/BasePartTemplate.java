@@ -57,11 +57,12 @@ public abstract class BasePartTemplate {
 		this.offset = other.offset;
 	}
 
-	public Entity spawnEntity(Location location, EntityType type) {
+	public Entity spawnEntity(Location location, EntityType type, String vehicleName) {
 		Entity entity = location.getWorld().spawnEntity(location, type);
 		entity.setInvulnerable(true);
 		entity.setGravity(false);
 		entity.addScoreboardTag("TransportBukkit_Entity");
+		entity.addScoreboardTag("Vehicle_" + vehicleName);
 		if (entity instanceof LivingEntity) {
 			((LivingEntity) entity).setAI(false);
 			((LivingEntity) entity).setSilent(true);
@@ -71,8 +72,8 @@ public abstract class BasePartTemplate {
 		return entity;
 	}
 
-	public ArmorStand spawnArmorStand(Location location) {
-		ArmorStand entity = (ArmorStand) spawnEntity(location, EntityType.ARMOR_STAND);
+	public ArmorStand spawnArmorStand(Location location, String vehicleName) {
+		ArmorStand entity = (ArmorStand) spawnEntity(location, EntityType.ARMOR_STAND, vehicleName);
 		entity.setVisible(false);
 		entity.setBasePlate(false);
 		return entity;

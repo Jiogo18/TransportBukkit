@@ -42,7 +42,7 @@ public class VehiclePartArmorStandHead extends VehiclePartEntity {
 	@Override
 	Entity spawnEntity() {
 		if (entityUuid == null && !isEntityValid()) {
-			entity = template.spawnArmorStand(getLocation());
+			entity = template.spawnArmorStand(getLocation(), getVehicle().getName());
 		}
 		return entity;
 	}

@@ -36,7 +36,7 @@ public class VehiclePartCustomEntity extends VehiclePartEntity {
 	@Override
 	Entity spawnEntity() {
 		if (entityUuid == null && !isEntityValid()) {
-			entity = template.spawnEntity(getLocation());
+			entity = template.spawnEntity(getLocation(), getVehicle().getName());
 		}
 		return entity;
 	}

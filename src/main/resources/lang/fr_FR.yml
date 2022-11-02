@@ -1,8 +1,8 @@
-# Modifié par Jarven le 2022-10-22.
+# Modifié par Jarven le 2022-11-02.
 # Vous pouvez désactiver l'actualisation automatique si vous modifiez ce fichier manuellement.
 version.autoupdate: true
 version.warnings: true
-version.revision: "2022-10-22"
+version.revision: "2022-11-02"
 
 transport:
   help:
@@ -27,7 +27,7 @@ transport:
     format: "yyyy-MM-dd HH:mm:ss"
 
   vehicle:
-    unknown: "Véhicule %vehicle% inconnu"
+    unknown: "§cVéhicule %vehicle% §cinconnu"
     list: |-
       §7Véhicules :
       %vehicles%
@@ -41,11 +41,11 @@ transport:
       §7Places : §f%seats%
       §7Passagers : §f%passengers%
       §7Dernière sauvegarde : §f%last_saved%
-    already_exists: "Le véhicule %vehicle% existe déjà"
+    already_exists: "§cLe véhicule %vehicle% §cexiste déjà"
     created: "Véhicule %vehicle% créé"
-    creation_failed: "La création du véhicule a échoué"
+    creation_failed: "§cLa création du véhicule a échoué"
     removed: "Véhicule %vehicle% supprimé"
-    removal_failed: "La suppression du véhicule a échoué"
+    removal_failed: "§cLa suppression du véhicule a échoué"
     teleported: "Véhicule %vehicle% téléporté"
     respawned: "Véhicule %vehicle% réapparu"
     movement:
@@ -55,7 +55,7 @@ transport:
       not_moving: "Le véhicule %vehicle% ne se déplace pas"
 
   part:
-    unknown: "Partie de véhicule %part% inconnue"
+    unknown: "§cPartie de véhicule %part% §cinconnue"
     info: |-
       §7Partie de véhicule : §f%part%
       §7Véhicule : §f%vehicle%
@@ -64,7 +64,7 @@ transport:
 
   template:
     vehicle:
-      unknown: "Template de véhicule %template_vehicle% inconnue"
+      unknown: "§cTemplate de véhicule %template_vehicle% §cinconnue"
       list: |-
         §7Templates de véhicules :
         %vehicle_templates%
@@ -75,7 +75,7 @@ transport:
         §7Places : §f%seats%
         §7Parties de véhicule : §f%parts%
     part:
-      unknown: "Template de partie %template_part% inconnue"
+      unknown: "§cTemplate de partie %template_part% §cinconnue"
       list: |-
         §7Templates de parties de véhicules :
         %part_templates%
@@ -86,7 +86,7 @@ transport:
         §7Rotation : §f%rotation%
 
   player:
-    unknown: "Joueur %player% inconnu"
+    unknown: "§cJoueur %player% §cinconnu"
     info: |-
       §7Joueur : §f%player%
       §7Véhicule : §f%vehicle%
@@ -98,7 +98,7 @@ transport:
     enter: "%player% est entré dans le véhicule %vehicle%"
     full: "Le véhicule %vehicle% est plein"
     exit: "%player% a quitté le véhicule %vehicle%"
-    not_in_vehicle: "Vous n'êtes pas dans un véhicule"
+    not_in_vehicle: "%player% §cn'est pas dans un véhicule"
     locked: "%vehicle% est verrouillé"
     already_locked: "%vehicle% est déjà verrouillé"
     unlocked: "%vehicle% est déverrouillé"

@@ -83,6 +83,9 @@ public class Vehicle {
 			} else {
 				addPart(part);
 			}
+			if (part instanceof VehiclePartEntity) {
+				((VehiclePartEntity) part).spawn();
+			}
 		}
 	}
 
