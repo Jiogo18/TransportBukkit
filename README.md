@@ -7,8 +7,8 @@ TransportBukkit is a plugin that allows you to add custom vehicles to your serve
 - [x] Custom vehicles
 - [x] Yaw/Pitch/Roll support
 - [x] Seat management
-- [ ] Animation support
-- [ ] Move a vehicle to a specific location
+- [x] Animation support
+- [x] Move a vehicle to a specific location
 
 ## Requirements
 
