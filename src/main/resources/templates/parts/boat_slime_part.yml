@@ -7,6 +7,7 @@ name: boat_slime_part
 # type of the part (Require restart)
 # ARMOR_STAND_HEAD: an armor stand with an item on his head
 # CUSTOM_ENTITY: a custom entity (use the entityType option)
+# CUSTOM_ENTITY_ON_ARMOR_STAND: a custom entity on an armor stand (use the entityType option)
 type: CUSTOM_ENTITY_ON_ARMOR_STAND
 entityType: MAGMA_CUBE
 

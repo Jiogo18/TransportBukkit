@@ -1,9 +1,11 @@
 package fr.jarven.transportbukkit.commands;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.Vector;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -70,38 +72,71 @@ public class CommandTools {
 							})));
 	}
 
-	public static double round(double value, int decimals) {
-		double factor = Math.pow(10, decimals);
-		return Math.round(value * factor) / factor;
-	}
-
 	public static String addDigits(int value, int digits) {
 		return StringUtils.leftPad(String.valueOf(value), digits, '0');
 	}
 
 	public static String toReadbleString(Location location) {
 		if (location == null) return "null";
-		return String.format("(%s ; %s ; %s) in %s",
-			round(location.getX(), 3),
-			round(location.getY(), 3),
-			round(location.getZ(), 3),
+		return String.format("(%.2f ; %.2f ; %.2f) in %s",
+			location.getX(),
+			location.getY(),
+			location.getZ(),
 			location.getWorld().getName());
+	}
+
+	public static String toReadbleString(LocationRollable location) {
+		if (location == null) return "null";
+		return String.format("(%7.2f,%7.2f,%7.2f ;%4.0f,%4.0f,%4.0f) in %s",
+			location.getX(),
+			location.getY(),
+			location.getZ(),
+			location.getYaw(),
+			location.getPitch(),
+			location.getRoll(),
+			location.getWorld().getName());
+	}
+
+	public static String toReadbleString(double number) {
+		return String.format("%9.2E", number);
+	}
+
+	public static ChatColor getSpeedColor(double speed) {
+		if (speed < 0.001) return ChatColor.GRAY;
+		if (speed < 0.01) return ChatColor.GREEN;
+		if (speed < 0.1) return ChatColor.DARK_GREEN;
+		if (speed < 0.3) return ChatColor.YELLOW;
+		if (speed < 0.5) return ChatColor.GOLD;
+		if (speed < 1) return ChatColor.RED;
+		return ChatColor.DARK_RED;
+	}
+
+	public static String toReadbleStringWithColor(double number, double colorFactor) {
+		return getSpeedColor(Math.abs(number * colorFactor)) + String.format("%9.2E", number) + ChatColor.RESET;
 	}
 
 	public static String toReadbleString(MovementsVector vector) {
 		if (vector == null) return "null";
 		return String.format("(%s,%s,%s ; %s,%s,%s)",
-			vector.getForwardBackward(),
-			vector.getLeftRight(),
-			vector.getUpDown(),
-			vector.getYaw(),
-			vector.getPitch(),
-			vector.getRoll());
+			toReadbleStringWithColor(vector.getForwardBackward(), 1),
+			toReadbleStringWithColor(vector.getLeftRight(), 1),
+			toReadbleStringWithColor(vector.getUpDown(), 1),
+			toReadbleStringWithColor(vector.getYaw(), 0.2),
+			toReadbleStringWithColor(vector.getPitch(), 0.2),
+			toReadbleStringWithColor(vector.getRoll(), 0.2));
+	}
+
+	public static String toReadbleString(Vector vector) {
+		if (vector == null) return "null";
+		return String.format("(%s,%s,%s)",
+			toReadbleStringWithColor(vector.getX(), 1),
+			toReadbleStringWithColor(vector.getY(), 1),
+			toReadbleStringWithColor(vector.getZ(), 1));
 	}
 
 	public static String toReadbleString(MovementsConstraints vector) {
 		if (vector == null) return "null";
-		return String.format("(%s/%s ; %s/%s ; %s/%s)",
+		return String.format("(%9.2E/%9.2E ; %9.2E/%9.2E ; %9.2E/%9.2E)",
 			vector.getForward(),
 			-vector.getBackward(),
 			vector.getLeft(),
@@ -109,6 +144,7 @@ public class CommandTools {
 			vector.getUp(),
 			-vector.getDown());
 	}
+
 	public static String toReadbleString(Date date, CommandSender sender) {
 		if (date == null) return "null";
 		Calendar calendar = Calendar.getInstance();

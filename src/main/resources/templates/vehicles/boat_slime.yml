@@ -65,12 +65,12 @@ seats:
 
 max_speed:
   ==: fr.jarven.transportbukkit.utils.MovementsConstraints
-  forward: 0.2
-  backward: 0.1
-  left: 0.05
-  right: 0.05
-  up: 0.5
-  down: 0.5
+  forward: 0.3
+  backward: 0.2
+  left: 0.2
+  right: 0.2
+  up: 0.05
+  down: 0.05
   yawLeft: 1
   yawRight: 1
   pitchUp: 2
@@ -80,12 +80,12 @@ max_speed:
 
 max_acceleration:
   ==: fr.jarven.transportbukkit.utils.MovementsConstraints
-  forward: 0.005
-  backward: 0.005
+  forward: 0.01
+  backward: 0.01
   left: 0.005
   right: 0.005
-  up: 0.01
-  down: 0.01
+  up: 0.005
+  down: 0.005
   yawLeft: 0.05
   yawRight: 0.05
   pitchUp: 0.05

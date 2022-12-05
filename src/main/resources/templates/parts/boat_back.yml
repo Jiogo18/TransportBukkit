@@ -6,10 +6,13 @@ name: boat_back
 
 # type of the part (Require restart)
 # ARMOR_STAND_HEAD: an armor stand with an item on his head
+# CUSTOM_ENTITY: a custom entity (use the entityType option)
+# CUSTOM_ENTITY_ON_ARMOR_STAND: a custom entity on an armor stand (use the entityType option)
 type: ARMOR_STAND_HEAD
 
 # Rotate the armor stand by its head or with the tp
 # TELEPORT is less accurate, but smoother (default)
+# TELEPORT_FAKE is the same as TELEPORT, but with some fake rotations (doesn't work if the entity travels a lot)
 # ROTATE_HEAD is more accurate, but less smooth at high speed
 # ROTATE_HEAD_DELAYED is the same as ROTATE_HEAD, but with a delay to make it smoother with the tp animation
 rotationType: TELEPORT

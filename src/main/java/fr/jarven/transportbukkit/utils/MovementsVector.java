@@ -44,10 +44,26 @@ public class MovementsVector extends Vector {
 		}
 	}
 
+	private static double round(double value) {
+		if (Math.abs(value) < 0.000001) {
+			return 0;
+		} else {
+			return (float) value;
+		}
+	}
+
+	private static float roundAngle(float value) {
+		if (Math.abs(value) < 0.0001) {
+			return 0;
+		} else {
+			return (float) value;
+		}
+	}
+
 	public void applyMaximum(MovementsConstraints maxSpeed) {
-		this.setX(applyMinMax(this.getX(), -maxSpeed.getBackward(), maxSpeed.getForward()));
-		this.setY(applyMinMax(this.getY(), -maxSpeed.getLeft(), maxSpeed.getRight()));
-		this.setZ(applyMinMax(this.getZ(), -maxSpeed.getDown(), maxSpeed.getUp()));
+		this.setX(applyMinMax(this.getX(), -maxSpeed.getRight(), maxSpeed.getLeft()));
+		this.setY(applyMinMax(this.getY(), -maxSpeed.getDown(), maxSpeed.getUp()));
+		this.setZ(applyMinMax(this.getZ(), -maxSpeed.getBackward(), maxSpeed.getForward()));
 		yaw = (float) applyMinMax(yaw, -maxSpeed.getYawLeft(), maxSpeed.getYawRight());
 		pitch = (float) applyMinMax(pitch, -maxSpeed.getPitchUp(), maxSpeed.getPitchDown());
 		roll = (float) applyMinMax(roll, -maxSpeed.getRollLeft(), maxSpeed.getRollRight());
@@ -307,5 +323,14 @@ public class MovementsVector extends Vector {
 		rotateAroundZ(-Math.toRadians(rotation.getRoll()));
 		rotateAroundX(-Math.toRadians(rotation.getPitch()));
 		return this;
+	}
+
+	public void round() {
+		this.setX(round(this.getX()));
+		this.setY(round(this.getY()));
+		this.setZ(round(this.getZ()));
+		this.setYaw(roundAngle(this.getYaw()));
+		this.setPitch(roundAngle(this.getPitch()));
+		this.setRoll(roundAngle(this.getRoll()));
 	}
 }

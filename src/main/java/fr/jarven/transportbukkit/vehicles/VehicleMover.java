@@ -147,6 +147,7 @@ public class VehicleMover {
 		relativeVelocity.add(acceleration);
 		relativeVelocity.applyMaximum(vehicle.getTemplate().getMaxSpeed());
 		absoluteVelocity.update(relativeVelocity.rotateAsAbsolute(location));
+		absoluteVelocity.round();
 		location.add(absoluteVelocity);
 		vehicle.teleport(location);
 	}

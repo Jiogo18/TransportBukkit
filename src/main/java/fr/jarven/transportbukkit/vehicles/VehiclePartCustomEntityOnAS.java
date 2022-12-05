@@ -104,8 +104,8 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 				.write(1, loc.getY())
 				.write(2, loc.getZ());
 			fakeTp.getBytes()
-				.write(0, (byte) 0)
-				.write(1, (byte) 0);
+				.write(0, (byte) (loc.getYaw() * 256 / 360))
+				.write(1, (byte) (loc.getPitch() * 256 / 360));
 
 			protocolManager.broadcastServerPacket(fakeTp);
 		}
@@ -126,10 +126,7 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 	public void updateRealLocation() {
 		LocationRollable loc = getLocation();
 		if (isEntityValid()) {
-			LocationRollable loc2 = new LocationRollable(loc);
-			loc2.setYaw(0);
-			loc2.setPitch(0);
-			template.teleport(super.getEntity(), loc2);
+			template.teleport(super.getEntity(), loc);
 		}
 		if (isCustomEntityValid()) {
 			customEntity.setRotation(loc.getYaw(), loc.getPitch());
@@ -149,6 +146,14 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 	@Override
 	protected void loadConfig(ConfigurationSection section) {
 		super.loadConfig(section);
+		try {
+			if (section.isString("customEntityUuid") && !section.getString("customEntityUuid").isEmpty()) {
+				customEntityUuid = UUID.fromString(section.getString("customEntityUuid"));
+			}
+		} catch (IllegalArgumentException e) {
+			TransportPlugin.LOGGER.warning("Invalid custom entity UUID: " + section.getString("customEntityUuid", ""));
+			customEntityUuid = null;
+		}
 		try {
 			if (customEntityUuid != null) {
 				customEntity = Bukkit.getEntity(customEntityUuid);
@@ -179,5 +184,11 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 			customEntity = null;
 		}
 		return customEntity != null;
+	}
+
+	@Override
+	protected void saveConfig(ConfigurationSection section) {
+		super.saveConfig(section);
+		section.set("customEntityUuid", customEntityUuid != null ? customEntityUuid.toString() : "");
 	}
 }
