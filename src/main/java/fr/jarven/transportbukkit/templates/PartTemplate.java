@@ -34,6 +34,7 @@ public class PartTemplate extends BasePartTemplate {
 	public enum PartType {
 		ARMOR_STAND_HEAD,
 		CUSTOM_ENTITY,
+		CUSTOM_ENTITY_ON_ARMOR_STAND,
 		UNKNOWN
 	}
 
@@ -91,7 +92,7 @@ public class PartTemplate extends BasePartTemplate {
 
 		PartTemplate partTemplate = new PartTemplate(name, type);
 
-		if (type == PartType.CUSTOM_ENTITY) {
+		if (type == PartType.CUSTOM_ENTITY || type == PartType.CUSTOM_ENTITY_ON_ARMOR_STAND) {
 			EntityType entityType = EntityType.valueOf(config.getString("entityType", "UNKNOWN"));
 			if (entityType == null) {
 				TransportPlugin.LOGGER.warning("Part template " + file.getName() + " has no entityType");
@@ -151,6 +152,7 @@ public class PartTemplate extends BasePartTemplate {
 				entity = spawnArmorStand(location, vehicleName);
 				break;
 			case CUSTOM_ENTITY:
+			case CUSTOM_ENTITY_ON_ARMOR_STAND:
 				entity = spawnEntity(location, entityType, vehicleName);
 				break;
 			case UNKNOWN:

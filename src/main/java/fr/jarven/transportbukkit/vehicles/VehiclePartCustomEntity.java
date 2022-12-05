@@ -12,7 +12,7 @@ import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.PartTemplate;
 import fr.jarven.transportbukkit.utils.LocationRollable;
 
-// An entity riding a small armor stand
+// A custom entity
 public class VehiclePartCustomEntity extends VehiclePartEntity {
 	private Entity entity;
 
@@ -27,7 +27,7 @@ public class VehiclePartCustomEntity extends VehiclePartEntity {
 
 	@Override
 	Entity getEntityForce() {
-		if (entity == null || !entity.isValid()) {
+		if (entityUuid != null && (entity == null || !entity.isValid())) {
 			entity = Bukkit.getEntity(entityUuid);
 		}
 		return entity;

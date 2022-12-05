@@ -51,6 +51,8 @@ public abstract class VehiclePart {
 				return new VehiclePartArmorStandHead(vehicle, partTemplate);
 			case CUSTOM_ENTITY:
 				return new VehiclePartCustomEntity(vehicle, partTemplate);
+			case CUSTOM_ENTITY_ON_ARMOR_STAND:
+				return new VehiclePartCustomEntityOnAS(vehicle, partTemplate);
 			case UNKNOWN:
 				throw new IllegalArgumentException("Unknown part type: " + partTemplate.getType() + " for part " + partTemplate.getName());
 		}

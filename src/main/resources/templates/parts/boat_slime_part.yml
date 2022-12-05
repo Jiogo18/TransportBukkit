@@ -7,7 +7,7 @@ name: boat_slime_part
 # type of the part (Require restart)
 # ARMOR_STAND_HEAD: an armor stand with an item on his head
 # CUSTOM_ENTITY: a custom entity (use the entityType option)
-type: CUSTOM_ENTITY
+type: CUSTOM_ENTITY_ON_ARMOR_STAND
 entityType: MAGMA_CUBE
 
 # Rotate the armor stand by its head or with the tp
@@ -18,9 +18,9 @@ entityType: MAGMA_CUBE
 rotationType: TELEPORT
 
 offset:
-  x: 0
-  y: 0
-  z: 0
+  x: -0.5
+  y: -0.7
+  z: -0.5
   yaw: 0
   pitch: 0
   roll: 0

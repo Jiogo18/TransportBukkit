@@ -33,7 +33,7 @@ public class VehiclePartArmorStandHead extends VehiclePartEntity {
 
 	@Override
 	Entity getEntityForce() {
-		if (entity == null || !entity.isValid()) {
+		if (entityUuid != null && (entity == null || !entity.isValid())) {
 			entity = (ArmorStand) Bukkit.getEntity(entityUuid);
 		}
 		return entity;

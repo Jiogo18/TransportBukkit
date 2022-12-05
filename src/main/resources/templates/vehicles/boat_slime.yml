@@ -10,7 +10,7 @@ parts:
 # Position of the pivot point relative to the position of the vehicle
 offset:
   x: 0
-  y: 0
+  y: -0.15
   z: 0
   yaw: 0
   pitch: 0
@@ -65,14 +65,14 @@ seats:
 
 max_speed:
   ==: fr.jarven.transportbukkit.utils.MovementsConstraints
-  forward: 0.5
-  backward: 0.2
-  left: 0.2
-  right: 0.2
+  forward: 0.2
+  backward: 0.1
+  left: 0.05
+  right: 0.05
   up: 0.5
   down: 0.5
-  yawLeft: 2
-  yawRight: 2
+  yawLeft: 1
+  yawRight: 1
   pitchUp: 2
   pitchDown: 2
   rollLeft: 2
@@ -80,15 +80,15 @@ max_speed:
 
 max_acceleration:
   ==: fr.jarven.transportbukkit.utils.MovementsConstraints
-  forward: 0.02
-  backward: 0.01
+  forward: 0.005
+  backward: 0.005
   left: 0.005
   right: 0.005
   up: 0.01
   down: 0.01
-  yawLeft: 0.1
-  yawRight: 0.1
-  pitchUp: 0.1
-  pitchDown: 0.1
-  rollLeft: 0.1
-  rollRight: 0.1
+  yawLeft: 0.05
+  yawRight: 0.05
+  pitchUp: 0.05
+  pitchDown: 0.05
+  rollLeft: 0.05
+  rollRight: 0.05
