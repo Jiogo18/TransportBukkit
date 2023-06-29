@@ -21,7 +21,7 @@ public class MovementTask {
 	private static void startTask() {
 		if (task == null) {
 			task = Bukkit.getScheduler().runTaskTimer(TransportPlugin.getInstance(), () -> {
-				for (VehicleMover mover : vehicles.values()) {
+				for (VehicleMover mover : vehicles.values().toArray(new VehicleMover[0])) {
 					mover.tickMovement();
 				}
 			}, 1, 1);
