@@ -85,19 +85,11 @@ public class PartTemplate extends BasePartTemplate {
 			return null;
 		}
 		PartType type = PartType.valueOf(config.getString("type", "UNKNOWN"));
-		if (type == null) {
-			TransportPlugin.LOGGER.warning("Part template " + file.getName() + " has no type");
-			return null;
-		}
 
 		PartTemplate partTemplate = new PartTemplate(name, type);
 
 		if (type == PartType.CUSTOM_ENTITY || type == PartType.CUSTOM_ENTITY_ON_ARMOR_STAND) {
 			EntityType entityType = EntityType.valueOf(config.getString("entityType", "UNKNOWN"));
-			if (entityType == null) {
-				TransportPlugin.LOGGER.warning("Part template " + file.getName() + " has no entityType");
-				return null;
-			}
 			partTemplate.entityType = entityType;
 		}
 
@@ -116,10 +108,6 @@ public class PartTemplate extends BasePartTemplate {
 		if (config.contains("entityProperties")) {
 			for (String key : config.getConfigurationSection("entityProperties").getKeys(false)) {
 				EntityPropertyType propType = EntityPropertyType.valueOf(key);
-				if (propType == null) {
-					TransportPlugin.LOGGER.warning("Part template " + file.getName() + " has unknown entity property " + key);
-					continue;
-				}
 				partTemplate.entityProperties.put(propType, config.get("entityProperties." + key));
 			}
 		}
