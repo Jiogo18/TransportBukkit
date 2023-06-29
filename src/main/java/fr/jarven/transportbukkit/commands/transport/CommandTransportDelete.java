@@ -11,8 +11,8 @@ import fr.jarven.transportbukkit.vehicles.Vehicle;
 public class CommandTransportDelete extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("delete")
-			.then(vehicleArgument("vehicle_name")
-					.executes((sender, args) -> { return removeVehicle(sender, (Vehicle) args[0]); }));
+			.then(vehicleArgument()
+					.executes((sender, args) -> (removeVehicle(sender, getVehicle(args)))));
 	}
 
 	public int removeVehicle(CommandSender sender, Vehicle vehicle) {

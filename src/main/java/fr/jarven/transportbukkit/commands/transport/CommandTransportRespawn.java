@@ -10,8 +10,8 @@ import fr.jarven.transportbukkit.vehicles.Vehicle;
 public class CommandTransportRespawn extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("respawn")
-			.then(vehicleArgument("vehicle_name")
-					.executesNative((sender, args) -> { return respawnVehicle(sender, (Vehicle) args[0]); }));
+			.then(vehicleArgument()
+					.executesNative((sender, args) -> (respawnVehicle(sender, getVehicle(args)))));
 	}
 
 	public int respawnVehicle(CommandSender sender, Vehicle vehicle) {

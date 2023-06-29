@@ -16,20 +16,20 @@ public class CommandTransportSit extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("sit")
 			.then(literal("enter")
-					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return enterVehicle(sender, (Vehicle) args[0], false); })
+					.then(vehicleArgument()
+							.executesNative((sender, args) -> (enterVehicle(sender, getVehicle(args), false)))
 							.then(literal("--force-lock")
-									.executesNative((sender, args) -> { return enterVehicle(sender, (Vehicle) args[0], true); }))))
+									.executesNative((sender, args) -> (enterVehicle(sender, getVehicle(args), true))))))
 			.then(literal("exit")
-					.executesNative((sender, args) -> { return exitVehicle(sender, false); })
+					.executesNative((sender, args) -> (exitVehicle(sender, false)))
 					.then(literal("--force-lock")
-							.executesNative((sender, args) -> { return exitVehicle(sender, true); })))
+							.executesNative((sender, args) -> (exitVehicle(sender, true)))))
 			.then(literal("lock")
-					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return lockVehicle(sender, (Vehicle) args[0]); })))
+					.then(vehicleArgument()
+							.executesNative((sender, args) -> (lockVehicle(sender, getVehicle(args))))))
 			.then(literal("unlock")
-					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return unlockVehicle(sender, (Vehicle) args[0]); })));
+					.then(vehicleArgument()
+							.executesNative((sender, args) -> (unlockVehicle(sender, getVehicle(args))))));
 	}
 
 	public int enterVehicle(NativeProxyCommandSender proxy, Vehicle vehicle, boolean force) {

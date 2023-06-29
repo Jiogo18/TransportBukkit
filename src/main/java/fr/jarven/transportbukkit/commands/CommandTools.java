@@ -10,21 +10,27 @@ import org.bukkit.util.Vector;
 import java.util.Calendar;
 import java.util.Date;
 
-import dev.jorel.commandapi.ArgumentTree;
+import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.RotationArgument;
+import dev.jorel.commandapi.executors.CommandArguments;
+import dev.jorel.commandapi.executors.ConsoleResultingCommandExecutor;
 import dev.jorel.commandapi.wrappers.Rotation;
 import fr.jarven.transportbukkit.commands.arguments.PartArgument;
 import fr.jarven.transportbukkit.commands.arguments.PartTemplateArgument;
 import fr.jarven.transportbukkit.commands.arguments.VehicleArgument;
 import fr.jarven.transportbukkit.commands.arguments.VehicleTemplateArgument;
+import fr.jarven.transportbukkit.templates.PartTemplate;
+import fr.jarven.transportbukkit.templates.VehicleTemplate;
 import fr.jarven.transportbukkit.utils.LocationRollable;
 import fr.jarven.transportbukkit.utils.Messages.Resources;
 import fr.jarven.transportbukkit.utils.MovementsConstraints;
 import fr.jarven.transportbukkit.utils.MovementsVector;
 import fr.jarven.transportbukkit.utils.TriFunction;
+import fr.jarven.transportbukkit.vehicles.Vehicle;
+import fr.jarven.transportbukkit.vehicles.VehiclePart;
 
 public class CommandTools {
 	protected CommandTools() {}
@@ -33,26 +39,42 @@ public class CommandTools {
 		return new LiteralArgument(name);
 	}
 
-	public static PartTemplateArgument partTemplateArgument(String name) {
-		return new PartTemplateArgument(name);
+	public static PartTemplateArgument partTemplateArgument() {
+		return new PartTemplateArgument("part_template_name");
 	}
 
-	public static VehicleTemplateArgument vehicleTemplateArgument(String name) {
-		return new VehicleTemplateArgument(name);
+	public static VehicleTemplateArgument vehicleTemplateArgument() {
+		return new VehicleTemplateArgument("vehicle_template_name");
 	}
 
-	public static VehicleArgument vehicleArgument(String name) {
-		return new VehicleArgument(name);
+	public static VehicleArgument vehicleArgument() {
+		return new VehicleArgument("vehicle_name");
 	}
 
-	public static PartArgument partArgument(String name) {
-		return new PartArgument(name);
+	public static PartArgument vehiclePartArgument() {
+		return new PartArgument("part_name");
 	}
 
-	public static ArgumentTree locationRollableArgument(int argIndex, TriFunction<CommandSender, Object[], LocationRollable, Integer> callback) {
+	public static PartTemplate getPartTemplate(CommandArguments args) {
+		return (PartTemplate) args.get("part_template_name");
+	}
+
+	public static VehicleTemplate getVehicleTemplate(CommandArguments args) {
+		return (VehicleTemplate) args.get("vehicle_template_name");
+	}
+
+	public static Vehicle getVehicle(CommandArguments args) {
+		return (Vehicle) args.get("vehicle_name");
+	}
+
+	public static VehiclePart getVehiclePart(CommandArguments args) {
+		return (VehiclePart) args.get("part_name");
+	}
+
+	public static Argument<Location> locationRollableArgument(TriFunction<CommandSender, CommandArguments, LocationRollable, Integer> callback) {
 		return new LocationArgument("destination")
 			.executes((sender, args) -> {
-				LocationRollable loc = new LocationRollable((Location) args[argIndex]);
+				LocationRollable loc = new LocationRollable((Location) args.get("destination"));
 				if (sender instanceof LivingEntity) {
 					loc.setYaw(((LivingEntity) sender).getLocation().getYaw());
 					loc.setPitch(((LivingEntity) sender).getLocation().getPitch());
@@ -61,16 +83,21 @@ public class CommandTools {
 			})
 			.then(new RotationArgument("rotation")
 					.executes((sender, args) -> {
-						LocationRollable loc = new LocationRollable((Location) args[argIndex], (Rotation) args[argIndex + 1]);
+						LocationRollable loc = new LocationRollable((Location) args.get("destination"), (Rotation) args.get("rotation"));
 						return callback.apply(sender, args, loc);
 					})
 					.then(new FloatArgument("roll")
 							.executes((sender, args) -> {
-								LocationRollable loc = new LocationRollable((Location) args[argIndex], (Rotation) args[argIndex + 1]);
-								loc.setRoll((float) args[3]);
+								LocationRollable loc = new LocationRollable((Location) args.get("destination"), (Rotation) args.get("rotation"));
+								loc.setRoll((float) args.getOptional("roll").orElse(0.0f));
 								return callback.apply(sender, args, loc);
 							})));
 	}
+
+	public ConsoleResultingCommandExecutor sendNeedLocation = (sender, args) -> {
+		Resources.NEED_LOCATION.send(sender);
+		return 0;
+	};
 
 	public static String addDigits(int value, int digits) {
 		return StringUtils.leftPad(String.valueOf(value), digits, '0');

@@ -12,8 +12,8 @@ import fr.jarven.transportbukkit.vehicles.Vehicle;
 public class CommandTransportTpTo extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("tpto")
-			.then(vehicleArgument("vehicle_name")
-					.executesNative((sender, args) -> { return tpToVehicle(sender, (Vehicle) args[0]); }));
+			.then(vehicleArgument()
+					.executesNative((sender, args) -> (tpToVehicle(sender, getVehicle(args)))));
 	}
 
 	public int tpToVehicle(NativeProxyCommandSender proxy, Vehicle vehicle) {

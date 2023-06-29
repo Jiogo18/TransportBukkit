@@ -14,10 +14,10 @@ import fr.jarven.transportbukkit.vehicles.Vehicle;
 public class CommandTransportCreate extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("create")
-			.then(vehicleTemplateArgument("vehicle_template")
+			.then(vehicleTemplateArgument()
 					.then(new StringArgument("vehicle_name")
 							.replaceSuggestions((info, builder) -> {
-								VehicleTemplate template = (VehicleTemplate) info.previousArgs()[0];
+								VehicleTemplate template = getVehicleTemplate(info.previousArgs());
 								String templateName = template.getName().toLowerCase() + '_';
 								int index = 1;
 								while (TransportPlugin.getVehicleManager().getVehicle(templateName + index).isPresent()) {
@@ -25,9 +25,9 @@ public class CommandTransportCreate extends CommandTools {
 								}
 								return builder.suggest(templateName + index).buildFuture();
 							})
-							.executesNative((sender, args) -> { return createVehicle(sender, (VehicleTemplate) args[0], (String) args[1], sender.getLocation()); })
-							.then(locationRollableArgument(2, (sender, args, loc) -> createVehicle(sender, (VehicleTemplate) args[0], (String) args[1], loc)))
-							.executesConsole((sender, args) -> { Resources.NEED_LOCATION.send(sender); return 1; })));
+							.executesNative((sender, args) -> (createVehicle(sender, getVehicleTemplate(args), (String) args.get("vehicle_name"), sender.getLocation())))
+							.then(locationRollableArgument((sender, args, loc) -> createVehicle(sender, getVehicleTemplate(args), (String) args.get("vehicle_name"), loc)))
+							.executesConsole((sender, args) -> { Resources.NEED_LOCATION.send(sender); return 0; })));
 	}
 
 	public int createVehicle(CommandSender sender, VehicleTemplate template, String name, Location location) {

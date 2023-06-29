@@ -11,10 +11,10 @@ import fr.jarven.transportbukkit.vehicles.Vehicle;
 public class CommandTransportTpHere extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("tphere")
-			.then(vehicleArgument("vehicle_name")
-					.executesNative((sender, args) -> { return tpVehicle(sender, (Vehicle) args[0], new LocationRollable(sender.getLocation())); })
-					.then(locationRollableArgument(1, (sender, args, loc) -> tpVehicle(sender, (Vehicle) args[0], loc)))
-					.executesConsole((sender, args) -> { Resources.NEED_LOCATION.send(sender); return 1; }));
+			.then(vehicleArgument()
+					.executesNative((sender, args) -> (tpVehicle(sender, getVehicle(args), new LocationRollable(sender.getLocation()))))
+					.then(locationRollableArgument((sender, args, loc) -> tpVehicle(sender, getVehicle(args), loc)))
+					.executesConsole(sendNeedLocation));
 	}
 
 	public int tpVehicle(CommandSender sender, Vehicle vehicle, LocationRollable location) {

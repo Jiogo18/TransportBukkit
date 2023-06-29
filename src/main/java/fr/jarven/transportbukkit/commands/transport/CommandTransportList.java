@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import dev.jorel.commandapi.executors.CommandArguments;
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.commands.CommandTools;
 import fr.jarven.transportbukkit.templates.PartTemplate;
@@ -21,7 +22,7 @@ public class CommandTransportList extends CommandTools {
 			.then(literal("part_templates").executes(CommandTransportList::listPartTemplates));
 	}
 
-	private static int listVehicles(CommandSender sender, Object[] args) {
+	private static int listVehicles(CommandSender sender, CommandArguments args) {
 		List<String> vehiclesName = TransportPlugin.getVehicleManager().getVehicles().stream().map(Vehicle::getName).collect(Collectors.toList());
 		String vehicleList = String.join(", ", vehiclesName);
 		Resources.VEHICLE_LIST
@@ -30,7 +31,7 @@ public class CommandTransportList extends CommandTools {
 		return vehiclesName.size();
 	}
 
-	private static int listVehicleTemplates(CommandSender sender, Object[] args) {
+	private static int listVehicleTemplates(CommandSender sender, CommandArguments args) {
 		List<String> templatesName = TransportPlugin.getTemplateManager().getVehicleTemplates().stream().map(VehicleTemplate::getName).collect(Collectors.toList());
 		String templateList = String.join(", ", templatesName);
 		Resources.TEMPLATE_VEHICLE_LIST
@@ -39,7 +40,7 @@ public class CommandTransportList extends CommandTools {
 		return templatesName.size();
 	}
 
-	private static int listPartTemplates(CommandSender sender, Object[] args) {
+	private static int listPartTemplates(CommandSender sender, CommandArguments args) {
 		List<String> templatesName = TransportPlugin.getTemplateManager().getPartTemplates().stream().map(PartTemplate::getName).collect(Collectors.toList());
 		String templateList = String.join(", ", templatesName);
 		Resources.TEMPLATE_PART_LIST

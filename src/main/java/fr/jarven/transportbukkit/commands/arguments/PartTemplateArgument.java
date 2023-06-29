@@ -1,8 +1,11 @@
 package fr.jarven.transportbukkit.commands.arguments;
 
+import org.bukkit.command.CommandSender;
+
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.executors.CommandArguments;
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.templates.PartTemplate;
 import fr.jarven.transportbukkit.utils.Messages;
@@ -13,7 +16,7 @@ public class PartTemplateArgument extends CustomArgument<PartTemplate, String> {
 		replaceSuggestions(PartSuggestions);
 	}
 
-	private static ArgumentSuggestions PartSuggestions = (info, builder) -> {
+	private static ArgumentSuggestions<CommandSender> PartSuggestions = (info, builder) -> {
 		String current = info.currentArg().toLowerCase();
 		// List of Part names
 		for (PartTemplate template : TransportPlugin.getTemplateManager().getPartTemplates()) {
@@ -32,7 +35,7 @@ public class PartTemplateArgument extends CustomArgument<PartTemplate, String> {
 			.orElseThrow(() -> Messages.createCustomArgumentException(info, Messages.Resources.TEMPLATE_PART_UNKNOWN.replace("%template_part%", name)));
 	}
 
-	public static PartTemplate getTemplate(Object[] args, int argIndex) {
-		return (PartTemplate) args[argIndex];
+	public static PartTemplate getTemplate(CommandArguments args, String nodeName) {
+		return (PartTemplate) args.get(nodeName);
 	}
 }

@@ -1,8 +1,11 @@
 package fr.jarven.transportbukkit.commands.arguments;
 
+import org.bukkit.command.CommandSender;
+
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.executors.CommandArguments;
 import fr.jarven.transportbukkit.TransportPlugin;
 import fr.jarven.transportbukkit.utils.Messages;
 import fr.jarven.transportbukkit.vehicles.Vehicle;
@@ -13,7 +16,7 @@ public class VehicleArgument extends CustomArgument<Vehicle, String> {
 		replaceSuggestions(vehicleSuggestions);
 	}
 
-	private static ArgumentSuggestions vehicleSuggestions = (info, builder) -> {
+	private static ArgumentSuggestions<CommandSender> vehicleSuggestions = (info, builder) -> {
 		String current = info.currentArg().toLowerCase();
 		// List of vehicle names
 		for (Vehicle vehicle : TransportPlugin.getVehicleManager().getVehicles()) {
@@ -32,7 +35,7 @@ public class VehicleArgument extends CustomArgument<Vehicle, String> {
 			.orElseThrow(() -> Messages.createCustomArgumentException(info, Messages.Resources.VEHICLE_UNKNOWN.replace("%vehicle%", vehicleName)));
 	}
 
-	public static Vehicle getVehicle(Object[] args, int argIndex) {
-		return (Vehicle) args[argIndex];
+	public static Vehicle getVehicle(CommandArguments args, String nodeName) {
+		return (Vehicle) args.get(nodeName);
 	}
 }

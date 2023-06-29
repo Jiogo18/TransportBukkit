@@ -15,22 +15,24 @@ public class CommandTransportMovement extends CommandTools {
 	public LiteralArgument getArgumentTree() {
 		return (LiteralArgument) literal("movement")
 			.then(literal("move_here")
-					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return moveVehicle(sender, (Vehicle) args[0], new LocationRollable(sender.getLocation())); })
-							.then(locationRollableArgument(1, (sender, args, loc) -> moveVehicle(sender, (Vehicle) args[0], loc))))
-					.executesConsole(this::needLocation))
+					.then(vehicleArgument()
+							.executesNative((sender, args) -> (moveVehicle(sender, getVehicle(args), new LocationRollable(sender.getLocation()))))
+							.then(locationRollableArgument((sender, args, loc) -> moveVehicle(sender, getVehicle(args), loc))))
+					.executesConsole(sendNeedLocation))
 			.then(literal("move_here_no_rotation")
-					.then(vehicleArgument("vehicle_name")
+					.then(vehicleArgument()
 							.executesNative((sender, args) -> {
-								return moveVehicle(sender, (Vehicle) args[0], catLocationRotation(sender.getLocation(), ((Vehicle) args[0]).getLocation()));
+								Vehicle vehicle = getVehicle(args);
+								return moveVehicle(sender, vehicle, catLocationRotation(sender.getLocation(), vehicle.getLocation()));
 							})
 							.then(new LocationArgument("location").executes((sender, args) -> {
-								return moveVehicle(sender, (Vehicle) args[0], catLocationRotation((Location) args[1], ((Vehicle) args[0]).getLocation()));
+								Vehicle vehicle = getVehicle(args);
+								return moveVehicle(sender, vehicle, catLocationRotation((Location) args.get("location"), vehicle.getLocation()));
 							}))
-							.executesConsole(this::needLocation)))
+							.executesConsole(sendNeedLocation)))
 			.then(literal("stop")
-					.then(vehicleArgument("vehicle_name")
-							.executesNative((sender, args) -> { return stopVehicle(sender, (Vehicle) args[0]); })));
+					.then(vehicleArgument()
+							.executesNative((sender, args) -> (stopVehicle(sender, getVehicle(args))))));
 	}
 
 	public int moveVehicle(CommandSender sender, Vehicle vehicle, LocationRollable destination) {
@@ -75,10 +77,5 @@ public class CommandTransportMovement extends CommandTools {
 		destination.setPitch(rotationDestination.getPitch());
 		destination.setRoll(rotationDestination.getRoll());
 		return destination;
-	}
-
-	private int needLocation(CommandSender sender, Object[] args) {
-		Resources.NEED_LOCATION.send(sender);
-		return 0;
 	}
 }
