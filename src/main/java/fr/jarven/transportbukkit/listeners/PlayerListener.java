@@ -1,7 +1,9 @@
 package fr.jarven.transportbukkit.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -13,7 +15,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.util.Collection;
@@ -110,13 +115,50 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+	public double getDistanceSquaredIfInFront(Location eyeLocation, Entity target) {
+		Vector direction = eyeLocation.getDirection();
+		RayTraceResult res = target.getBoundingBox().rayTrace(eyeLocation.toVector(), direction, 6.0D);
+		if (res == null) {
+			return -1;
+		}
+		return res.getHitPosition().distanceSquared(eyeLocation.toVector());
+	}
+
+	/**
+	 * Get the entity where the player is looking at
+	 */
+	public Optional<Seat> getNearestSeatInFrontOfPlayer(Vehicle vehicle, Player player) {
+		Seat nearestSeat = null;
+		double nearestDistance = Double.MAX_VALUE;
+
+		for (Entity target : player.getNearbyEntities(6.0D, 6.0D, 6.0D)) {
+			if (target instanceof ArmorStand) {
+				double distance = getDistanceSquaredIfInFront(player.getEyeLocation(), target);
+				if (distance != -1) {
+					Optional<Seat> seat = getSeatFromEntity(vehicle, target);
+					if (seat.isPresent()) {
+						if (distance < nearestDistance) {
+							nearestSeat = seat.get();
+							nearestDistance = distance;
+						}
+					}
+				}
+			}
+		}
+		return Optional.ofNullable(nearestSeat);
+	}
+
 	public void enterVehicle(Vehicle vehicle, Player player, Entity entityClicked) {
 		Optional<Seat> seatClicked = getSeatFromEntity(vehicle, entityClicked);
+		if (!seatClicked.isPresent()) {
+			seatClicked = getNearestSeatInFrontOfPlayer(vehicle, player);
+		}
 		enterVehicle(vehicle, player, seatClicked);
 	}
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractAtEntityEvent event) {
+		if (event.getHand() != EquipmentSlot.HAND) return; // No off-hand
 		Entity entityClicked = event.getRightClicked();
 		Optional<Vehicle> vehicle = getVehicleFromEntity(event.getRightClicked());
 		Player player = event.getPlayer();

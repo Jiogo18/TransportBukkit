@@ -34,6 +34,11 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 		return customEntityUuid;
 	}
 
+	@Override
+	public boolean isEntityUUID(UUID uuid) {
+		return super.isEntityUUID(uuid) || (customEntityUuid != null && customEntityUuid.equals(uuid));
+	}
+
 	Entity getCustomEntityForce() {
 		if (customEntityUuid != null && (customEntity == null || !customEntity.isValid())) {
 			customEntity = Bukkit.getEntity(customEntityUuid);
