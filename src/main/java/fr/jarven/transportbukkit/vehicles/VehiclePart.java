@@ -44,6 +44,9 @@ public abstract class VehiclePart {
 	protected abstract void update();
 	public abstract UUID getEntityUUID();
 	protected abstract void removeInternal();
+	public boolean isEntityUUID(UUID uuid) {
+		return uuid != null && uuid.equals(getEntityUUID());
+	}
 
 	public static VehiclePart createPart(Vehicle vehicle, PartTemplate partTemplate) {
 		switch (partTemplate.getType()) {

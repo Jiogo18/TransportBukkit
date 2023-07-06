@@ -90,6 +90,10 @@ public class Seat {
 		return seatEntityUuid;
 	}
 
+	public boolean isEntityUUID(UUID uuid) {
+		return seatEntityUuid != null && seatEntityUuid.equals(uuid);
+	}
+
 	private void retrieveSeatEntity() {
 		if (seatEntityUuid != null) {
 			seatEntity = Bukkit.getEntity(seatEntityUuid);

@@ -26,13 +26,11 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 		super(vehicle, properties);
 	}
 
-	@Override
-	Entity getEntity() {
+	Entity getCustomEntity() {
 		return customEntity;
 	}
 
-	@Override
-	public UUID getEntityUUID() {
+	public UUID getCustomEntityUUID() {
 		return customEntityUuid;
 	}
 
@@ -88,7 +86,7 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 	public void updateFakeLocation() {
 		// Move the vehicle but rotate the custom entity
 		if (isEntityValid()) {
-			ArmorStand armorStand = (ArmorStand) super.getEntity();
+			ArmorStand armorStand = (ArmorStand) getEntity();
 			if (template.getRotationType() == PartTemplate.RotationType.TELEPORT) {
 				updateRealLocation();
 				return;
@@ -126,7 +124,7 @@ public class VehiclePartCustomEntityOnAS extends VehiclePartArmorStandHead {
 	public void updateRealLocation() {
 		LocationRollable loc = getLocation();
 		if (isEntityValid()) {
-			template.teleport(super.getEntity(), loc);
+			template.teleport(getEntity(), loc);
 		}
 		if (isCustomEntityValid()) {
 			customEntity.setRotation(loc.getYaw(), loc.getPitch());

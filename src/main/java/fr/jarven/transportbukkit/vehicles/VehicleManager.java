@@ -149,6 +149,7 @@ public class VehicleManager {
 	}
 
 	public Optional<Vehicle> getVehicleByEntity(Entity entity) {
+		UUID uuid = entity.getUniqueId();
 		return vehicles
 			.stream()
 			.filter(vehicle -> {
@@ -156,11 +157,11 @@ public class VehicleManager {
 					       .getParts()
 					       .values()
 					       .stream()
-					       .anyMatch(part -> entity.getUniqueId().equals(part.getEntityUUID()))
+					       .anyMatch(part -> part.isEntityUUID(uuid))
 					|| vehicle
 						   .getSeats()
 						   .stream()
-						   .anyMatch(seat -> entity.getUniqueId().equals(seat.getEntityUUID()));
+						   .anyMatch(seat -> seat.isEntityUUID(uuid));
 			})
 			.findFirst();
 	}

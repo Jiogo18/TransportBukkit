@@ -64,18 +64,18 @@ public class VehicleTemplate {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		String name = config.getString("name");
 		if (name == null) {
-			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no name");
+			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no name, not loaded");
 			return null;
 		}
 		MovementsVector offset = MovementsVector.fromConfig(config.getConfigurationSection("offset"));
 		MovementsConstraints maxSpeed = (MovementsConstraints) config.get("max_speed");
 		if (maxSpeed == null) {
-			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no max_speed");
+			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no max_speed, not loaded");
 			return null;
 		}
 		MovementsConstraints maxAcceleration = config.getObject("max_acceleration", MovementsConstraints.class);
 		if (maxAcceleration == null) {
-			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no max_acceleration");
+			TransportPlugin.LOGGER.warning("Vehicle template " + file.getName() + " has no max_acceleration, not loaded");
 			return null;
 		}
 

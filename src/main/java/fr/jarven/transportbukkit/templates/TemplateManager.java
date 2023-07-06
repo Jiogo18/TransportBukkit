@@ -104,7 +104,7 @@ public class TemplateManager {
 			}
 		}
 		// Remove old templates
-		for (String templateName : vehiclesTemplates.keySet()) {
+		for (String templateName : vehiclesTemplates.keySet().toArray(new String[0])) {
 			if (!newVehiclesTemplates.containsKey(templateName)) {
 				vehiclesTemplates.remove(templateName);
 			}

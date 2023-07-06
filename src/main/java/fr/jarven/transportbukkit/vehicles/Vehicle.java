@@ -404,16 +404,26 @@ public class Vehicle {
 	}
 
 	protected static Vehicle fromConfig(File file, Optional<Vehicle> existingVehicle) {
-		Vehicle vehicle;
+		Vehicle vehicle = null;
 
 		if (existingVehicle.isPresent()) {
 			vehicle = existingVehicle.get();
-		} else {
+			Optional<VehicleTemplate> template = TransportPlugin.getTemplateManager().getVehicleTemplate(vehicle.getTemplate().getName());
+			if (!template.isPresent()) {
+				TransportPlugin.LOGGER.warning("Previous template of vehicle " + vehicle.getName() + " was removed, loading vehicle from file.");
+				vehicle = null;
+			} else if (template.get() != vehicle.getTemplate()) {
+				TransportPlugin.LOGGER.warning("Template of vehicle " + vehicle.getName() + " has changed, loading vehicle from file.");
+				vehicle = null;
+			}
+		}
+
+		if (vehicle == null) {
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 			String name = config.getString("name");
 			if (name == null) {
-				throw new IllegalArgumentException("Vehicle Template's name can't be null (" + file.getName() + ")");
+				throw new IllegalArgumentException("Vehicle's name can't be null (" + file.getName() + ")");
 			}
 
 			String templateName = config.getString("template");
